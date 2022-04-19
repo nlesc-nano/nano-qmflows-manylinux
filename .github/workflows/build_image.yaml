@@ -1,0 +1,23 @@
+name: Build Image from Dockerfile
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build_x86_64_wheels:
+    name: Build image for x86_64
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Publish Image
+      uses: matootie/github-docker@v3.1.0
+      with:
+        accessToken: ${{ secrets.GITHUB_TOKEN }}
+        imageName: manylinux2014_x86_64-qmflows
+        containerRegistry: true
+        contextName: ./x86_64.dockerfile

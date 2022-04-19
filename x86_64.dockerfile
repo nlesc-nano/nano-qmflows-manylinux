@@ -1,0 +1,16 @@
+FROM quay.io/pypa/manylinux2014_x86_64
+
+ENV HIGHFIVE_VERSION 2.3.1
+ENV BOOST_VERSION 1.78.0
+ENV EIGEN_VERSION 3.4.0
+
+ENV HDF5_VERSION 1.12.1
+ENV LIBINT_VERSION 2.6.0
+ENV GMP_VERSION 6.2.1
+
+RUN bash tools/install_highfive.sh $HIGHFIVE_VERSION
+RUN bash tools/install_boost.sh $BOOST_VERSION
+RUN bash tools/install_eigen.sh $EIGEN_VERSION
+RUN bash tools/install_gmp.sh $GMP_VERSION
+RUN bash tools/install_hdf5.sh $HDF5_VERSION
+RUN bash tools/install_libint.sh $LIBINT_VERSION
