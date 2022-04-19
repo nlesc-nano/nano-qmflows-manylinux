@@ -3,7 +3,7 @@ name: Build Image from Dockerfile
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 jobs:
