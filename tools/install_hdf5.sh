@@ -1,8 +1,8 @@
 set -e
 
-VERSION = "$1"
+VERSION="$1"
 VERSION_SHORT="${HDF5_VERSION%.*}"
-N_PROC = "$2"
+N_PROC="$2"
 PREFIX="/usr/local"
 
 download () {
