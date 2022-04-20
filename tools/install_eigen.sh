@@ -27,7 +27,8 @@ cleanup () {
     start=$SECONDS
     echo ::group::"Cleanup Eigen $VERSION files"
 
-    rm boost_$BOOST_VERSION_UNDERSCORE.tar.gz
+    rm -rf eigen-$EIGEN_VERSION
+    rm eigen-$VERSION.tar.gz
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"
