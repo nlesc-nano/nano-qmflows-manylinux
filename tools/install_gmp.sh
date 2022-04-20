@@ -1,4 +1,4 @@
-set -e
+set -euo pipefail
 
 VERSION="$1"
 N_PROC="$2"
@@ -45,7 +45,7 @@ cleanup () {
 
     rm gmp-$VERSION.tar.xz
     rm -rf gmp-$VERSION
-    file "$PREFIX"/
+    file "$PREFIX"/*
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"

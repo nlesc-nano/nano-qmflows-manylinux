@@ -1,6 +1,7 @@
-set -e
+set -euo pipefail
 
 VERSION="$1"
+PREFIX="/usr/local"
 
 download () {
     start=$SECONDS
@@ -17,7 +18,7 @@ configure () {
     start=$SECONDS
     echo ::group::"Configure Eigen $VERSION"
 
-    mv eigen-$EIGEN_VERSION/Eigen /usr/include/
+    mv eigen-$EIGEN_VERSION/Eigen "$PREFIX"/Eigen
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"
@@ -29,6 +30,7 @@ cleanup () {
 
     rm -rf eigen-$EIGEN_VERSION
     rm eigen-$VERSION.tar.gz
+    file "$PREFIX"/Eigen/*
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"

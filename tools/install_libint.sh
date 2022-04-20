@@ -1,4 +1,4 @@
-set -e
+set -euo pipefail
 
 VERSION="$1"
 PREFIX="/usr/local"
@@ -46,10 +46,10 @@ cleanup () {
     start=$SECONDS
     echo ::group::"Cleanup Libint $VERSION files"
 
-    rm hdf5-$VERSION.tar.gz
+    rm libint-$VERSION.tar.gz
     rm -rf libint-$VERSION
     rm -rf build
-    file "$PREFIX"/
+    file "$PREFIX"/*
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"

@@ -1,7 +1,8 @@
-set -e
+set -euo pipefail
 
 VERSION="$1"
 VERSION_UNDERSCORE="${VERSION//./_}"
+PREFIX="/usr/include"
 
 download () {
     start=$SECONDS
@@ -18,7 +19,7 @@ configure () {
     start=$SECONDS
     echo ::group::"Configure Boost $VERSION"
 
-    mv boost_$VERSION_UNDERSCORE/boost /usr/include/
+    mv boost_$VERSION_UNDERSCORE/boost "$PREFIX"/boost
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"
@@ -29,6 +30,7 @@ cleanup () {
     echo ::group::"Cleanup Boost $VERSION files"
 
     rm boost_$VERSION_UNDERSCORE.tar.gz
+    file "$PREFIX"/boost/*
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"

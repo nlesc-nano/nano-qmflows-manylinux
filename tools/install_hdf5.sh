@@ -1,4 +1,4 @@
-set -e
+set -euo pipefail
 
 VERSION="$1"
 VERSION_SHORT="${HDF5_VERSION%.*}"
@@ -47,7 +47,7 @@ cleanup () {
 
     rm hdf5-$VERSION.tar.gz
     rm -rf hdf5-$VERSION
-    file "$PREFIX"/
+    file "$PREFIX"/*
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"
