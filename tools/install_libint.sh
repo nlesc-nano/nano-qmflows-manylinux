@@ -24,7 +24,8 @@ configure () {
     pushd libint-$VERSION
     chmod u+rx autogen.sh
     ./autogen.sh
-    pushd ../build
+    popd
+    pushd build
     ../libint-$VERSION/configure --prefix="$PREFIX" --enable-shared=yes
 
     echo ::endgroup::
