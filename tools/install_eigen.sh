@@ -2,7 +2,7 @@ set -e
 
 VERSION="$1"
 
-setup_boost () {
+download () {
     start=$SECONDS
     echo ::group::"Download Eigen $VERSION"
 

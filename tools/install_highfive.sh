@@ -2,7 +2,6 @@ set -e
 
 VERSION="$1"
 
-
 download () {
     start=$SECONDS
     echo ::group::"Download HighFive $VERSION"

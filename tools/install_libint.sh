@@ -3,7 +3,6 @@ set -e
 VERSION="$1"
 PREFIX="/usr/local"
 
-
 download () {
     start=$SECONDS
     echo ::group::"Download Libint $VERSION"
