@@ -1,7 +1,7 @@
 set -euo pipefail
 
 VERSION="$1"
-PREFIX="/usr/local"
+PREFIX="/usr/include"
 
 download () {
     start=$SECONDS

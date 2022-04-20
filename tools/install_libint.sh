@@ -1,6 +1,7 @@
 set -euo pipefail
 
 VERSION="$1"
+N_PROC="$2"
 PREFIX="/usr/local"
 
 download () {
