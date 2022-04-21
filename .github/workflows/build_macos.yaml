@@ -58,6 +58,8 @@ jobs:
         ln -s output/include/* /usr/include/
         ln -s output/lib/* /usr/lib/
         ln -s output/bin/* /usr/bin/
+        ls -l /usr/include
+        ls -l /usr/lib
         bash tools/install_libint.sh $LIBINT_VERSION $PWD/output 2
 
     - uses: actions/upload-artifact@v3
