@@ -58,10 +58,7 @@ jobs:
         ln -s output/include/* /usr/local/include/
         ln -s output/lib/* /usr/local/lib/
         ln -s output/bin/* /usr/local/bin/
-        tree output
-        tree /usr/local/include
-        tree /usr/local/lib
-        tree /usr/local/bin
+        ls -l /usr/local/include
         bash tools/install_libint.sh $LIBINT_VERSION $PWD/output 2
 
     - uses: actions/upload-artifact@v3
