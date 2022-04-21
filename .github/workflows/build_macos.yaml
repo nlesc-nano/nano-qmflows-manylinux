@@ -55,11 +55,9 @@ jobs:
 
     - name: Install Libint
       run: |
-        ln -s output/include/* /usr/include/
-        ln -s output/lib/* /usr/lib/
-        ln -s output/bin/* /usr/bin/
-        ls -l /usr/include
-        ls -l /usr/lib
+        ln -s output/include/* /usr/local/include/
+        ln -s output/lib/* /usr/local/lib/
+        ln -s output/bin/* /usr/local/bin/
         bash tools/install_libint.sh $LIBINT_VERSION $PWD/output 2
 
     - uses: actions/upload-artifact@v3
