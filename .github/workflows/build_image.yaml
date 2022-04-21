@@ -20,17 +20,27 @@ defaults:
     shell: bash
 
 jobs:
-  build_x86_64_wheels:
-    name: Build image for x86_64
+  build_image:
+    name: Build ${{ matrix.arch }} image
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64]
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Set up QEMU
+      if: matrix.arch == 'aarch64'
+      uses: docker/setup-qemu-action@v1
+      with:
+        platforms: arm64
 
     - name: Publish Image
       uses: matootie/github-docker@v3.1.0
       with:
         accessToken: ${{ secrets.GITHUB_TOKEN }}
-        imageName: manylinux2014_x86_64-qmflows
+        imageName: manylinux2014_${{ matrix.arch }}-qmflows
         containerRegistry: true
-        contextName: ./x86_64.dockerfile
+        contextName: ./${{ matrix.arch }}.dockerfile

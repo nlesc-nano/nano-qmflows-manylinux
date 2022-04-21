@@ -1,6 +1,7 @@
 # nano-qmflows-manylinux
-Manylinux2014 [docker image](https://github.com/nlesc-nano/nano-qmflows-manylinux/pkgs/container/manylinux2014_x86_64-qmflows) with [Nano-QMFlows](https://github.com/SCM-NV/nano-qmflows) C++ build dependencies:
+Manylinux2014 docker images with [Nano-QMFlows](https://github.com/SCM-NV/nano-qmflows) C++ build dependencies.
 
+Contains the following additional packages:
 * Boost (header-only)
 * HighFive (header-only)
 * Eigen (header-only)
