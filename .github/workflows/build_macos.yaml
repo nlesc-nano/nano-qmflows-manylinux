@@ -1,0 +1,70 @@
+name: Build MacOS dependencies
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_image:
+    runs-on: macos-10.15
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "10.14"
+      HIGHFIVE_VERSION: "2.3.1"
+      BOOST_VERSION: "1.78.0"
+      EIGEN_VERSION: "3.4.0"
+      HDF5_VERSION: "1.12.1"
+      LIBINT_VERSION: "2.6.0"
+      GMP_VERSION: "6.2.1"
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Create output directories
+      run: |
+        mkdir -p output/lib
+        mkdir -p output/bin
+        mkdir -p output/include
+
+    - name: Install Automake
+      run: |
+        brew update
+        brew install automake
+        brew install tree
+
+    - name: Install HighFive
+      run: bash tools/install_highfive.sh $HIGHFIVE_VERSION $PWD/output
+
+    - name: Install Boost
+      run: bash tools/install_boost.sh $BOOST_VERSION $PWD/output
+
+    - name: Install Eigen
+      run: bash tools/install_eigen.sh $EIGEN_VERSION $PWD/output
+
+    - name: Install HDF5
+      run: bash tools/install_hdf5.sh $HDF5_VERSION $PWD/output 2
+
+    - name: Install Libint
+      run: |
+        ln -s output/include/* /usr/local/include/
+        ln -s output/lib/* /usr/local/lib/
+        ln -s output/bin/* /usr/local/bin/
+        tree output
+        tree /usr/local/include
+        tree /usr/local/lib
+        tree /usr/local/bin
+        bash tools/install_libint.sh $LIBINT_VERSION $PWD/output 2
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: macos_build
+        path: output
