@@ -2,7 +2,7 @@ set -euo pipefail
 
 VERSION="$1"
 VERSION_UNDERSCORE="${VERSION//./_}"
-PREFIX="/usr/include"
+PREFIX="$2"
 
 download () {
     start=$SECONDS
@@ -19,7 +19,7 @@ configure () {
     start=$SECONDS
     echo ::group::"Configure Boost $VERSION"
 
-    mv boost_$VERSION_UNDERSCORE/boost "$PREFIX"/boost
+    mv boost_$VERSION_UNDERSCORE/boost "$PREFIX"/include/boost
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"

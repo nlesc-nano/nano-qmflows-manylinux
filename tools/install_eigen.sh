@@ -1,7 +1,7 @@
 set -euo pipefail
 
 VERSION="$1"
-PREFIX="/usr/include"
+PREFIX="$2"
 
 download () {
     start=$SECONDS
@@ -18,7 +18,7 @@ configure () {
     start=$SECONDS
     echo ::group::"Configure Eigen $VERSION"
 
-    mv eigen-$EIGEN_VERSION/Eigen "$PREFIX"/Eigen
+    mv eigen-$EIGEN_VERSION/Eigen "$PREFIX"/include/Eigen
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"

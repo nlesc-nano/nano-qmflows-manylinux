@@ -14,9 +14,9 @@ COPY tools/install_gmp.sh /tmp/install_gmp.sh
 COPY tools/install_hdf5.sh /tmp/install_hdf5.sh
 COPY tools/install_libint.sh /tmp/install_libint.sh
 
-RUN bash /tmp/install_highfive.sh $HIGHFIVE_VERSION
-RUN bash /tmp/install_boost.sh $BOOST_VERSION
-RUN bash /tmp/install_eigen.sh $EIGEN_VERSION
-RUN bash /tmp/install_gmp.sh $GMP_VERSION 2
-RUN bash /tmp/install_hdf5.sh $HDF5_VERSION 2
-RUN bash /tmp/install_libint.sh $LIBINT_VERSION 2
+RUN bash /tmp/install_highfive.sh $HIGHFIVE_VERSION /usr/local
+RUN bash /tmp/install_boost.sh $BOOST_VERSION /usr/local
+RUN bash /tmp/install_eigen.sh $EIGEN_VERSION /usr/local
+RUN bash /tmp/install_gmp.sh $GMP_VERSION /usr/local 2
+RUN bash /tmp/install_hdf5.sh $HDF5_VERSION /usr/local 2
+RUN bash /tmp/install_libint.sh $LIBINT_VERSION /usr/local 2

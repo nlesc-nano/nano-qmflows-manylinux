@@ -1,7 +1,7 @@
 set -euo pipefail
 
 VERSION="$1"
-PREFIX="/usr/include"
+PREFIX="$2"
 
 download () {
     start=$SECONDS
@@ -18,7 +18,7 @@ configure () {
     start=$SECONDS
     echo ::group::"Configure HighFive $VERSION"
 
-    mv HighFive-$VERSION/include/* "$PREFIX"/
+    mv HighFive-$VERSION/include/* "$PREFIX"/include/
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"

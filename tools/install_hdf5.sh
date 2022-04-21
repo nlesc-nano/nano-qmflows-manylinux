@@ -2,8 +2,8 @@ set -euo pipefail
 
 VERSION="$1"
 VERSION_SHORT="${HDF5_VERSION%.*}"
-N_PROC="$2"
-PREFIX="/usr/local"
+PREFIX="$2"
+N_PROC="$3"
 
 download () {
     start=$SECONDS
