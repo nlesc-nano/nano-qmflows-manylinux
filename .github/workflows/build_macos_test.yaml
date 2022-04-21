@@ -1,0 +1,31 @@
+name: Build MacOS dependencies
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    runs-on: macos-10.15
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "10.14"
+      HIGHFIVE_VERSION: "2.3.1"
+      BOOST_VERSION: "1.78.0"
+      EIGEN_VERSION: "3.4.0"
+      HDF5_VERSION: "1.12.1"
+      LIBINT_VERSION: "2.6.0"
+      GMP_VERSION: "6.2.1"
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Check
+      run: tree /usr/local
+
