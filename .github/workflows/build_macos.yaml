@@ -50,17 +50,15 @@ jobs:
     - name: Install Eigen
       run: bash tools/install_eigen.sh $EIGEN_VERSION $PWD/output
 
-    - name: Install HDF5
-      run: bash tools/install_hdf5.sh $HDF5_VERSION $PWD/output 2
-
     - name: Install Libint
       run: |
-        ln -s output/include/* /usr/local/include/
-        ln -s output/lib/* /usr/local/lib/
-        ln -s output/bin/* /usr/local/bin/
-        export BOOST_ROOT="/usr/local/include/"
-        ls -l /usr/local/include/
+        cp -r output/include/* /usr/local/include/
+        cp -r output/lib/* /usr/local/lib/
+        cp -r output/bin/* /usr/local/bin/
         bash tools/install_libint.sh $LIBINT_VERSION $PWD/output 2
+
+    - name: Install HDF5
+      run: bash tools/install_hdf5.sh $HDF5_VERSION $PWD/output 2
 
     - uses: actions/upload-artifact@v3
       with:
