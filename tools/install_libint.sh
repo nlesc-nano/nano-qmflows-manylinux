@@ -27,7 +27,7 @@ configure () {
     popd
     pushd build
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        ../libint-$VERSION/configure --prefix="$PREFIX" --enable-shared=yes -std=c++11
+        ../libint-$VERSION/configure --prefix="$PREFIX" --enable-shared=yes CXXFLAGS='-std=c++11'
     else
         ../libint-$VERSION/configure --prefix="$PREFIX" --enable-shared=yes
     fi
