@@ -52,12 +52,7 @@ jobs:
 
     - name: Install Libint
       run: |
-        ls -l output
-        echo
-        ls -l output/lib
         cp -r output/include/* /usr/local/include/
-        cp -r output/lib/* /usr/local/lib/
-        cp -r output/bin/* /usr/local/bin/
         bash tools/install_libint.sh $LIBINT_VERSION $PWD/output 2
 
     - name: Install HDF5
