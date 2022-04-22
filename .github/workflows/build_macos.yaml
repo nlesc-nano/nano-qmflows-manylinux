@@ -15,7 +15,8 @@ defaults:
     shell: bash
 
 jobs:
-  build_image:
+  build:
+    name: Build MacOS dependencies
     runs-on: macos-10.15
     env:
       MACOSX_DEPLOYMENT_TARGET: "10.14"
@@ -56,7 +57,10 @@ jobs:
     - name: Install HDF5
       run: bash tools/install_hdf5.sh $HDF5_VERSION $PWD/output 2
 
+    - name: Create archive
+      run: tar -czvf output.tar.gz output
+
     - uses: actions/upload-artifact@v3
       with:
         name: macos_build
-        path: output
+        path: output.tar.gz
