@@ -2,9 +2,6 @@ name: Build MacOS dependencies
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -28,6 +25,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+
+    - name: Python info
+      run: |
+        which python
+        python --version
+
+    - name: Installed packages
+      run: pip list
 
     - name: Create output directories
       run: |
@@ -57,10 +66,17 @@ jobs:
     - name: Install HDF5
       run: bash tools/install_hdf5.sh $HDF5_VERSION $PWD/output 2
 
-    - name: Create archive
-      run: tar -czvf output.tar.gz output
+    - name: Commit output
+      run: |
+        git switch main
 
-    - uses: actions/upload-artifact@v3
-      with:
-        name: macos_build
-        path: output.tar.gz
+        rm macos/README.rst
+        rm macos/macos_deps.tar.gz
+        tar -czvf macos/macos_deps.tar.gz output
+        python tools/construct_readme.py macos/README.rst
+
+        COMMIT_MSG=${cat macos/README.rst}
+        git add macos/README.rst
+        git add macos/macos_deps.tar.gz
+        git commit -m "$COMMIT_MSG"
+        git push
