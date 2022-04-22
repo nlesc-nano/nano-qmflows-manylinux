@@ -75,7 +75,7 @@ jobs:
         tar -czvf macos/macos_deps.tar.gz output
         python tools/construct_readme.py macos/README.rst
 
-        COMMIT_MSG=${cat macos/README.rst}
+        COMMIT_MSG=$(cat macos/README.rst)
         git add macos/README.rst
         git add macos/macos_deps.tar.gz
         git commit -m "$COMMIT_MSG"
