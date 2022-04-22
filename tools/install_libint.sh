@@ -26,8 +26,11 @@ configure () {
     ./autogen.sh
     popd
     pushd build
-    ../libint-$VERSION/configure --prefix="$PREFIX" --enable-shared=yes
-
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        ../libint-$VERSION/configure --prefix="$PREFIX" --enable-shared=yes -std=c++11
+    else
+        ../libint-$VERSION/configure --prefix="$PREFIX" --enable-shared=yes
+    fi
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"
 }
