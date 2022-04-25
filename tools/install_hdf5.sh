@@ -9,7 +9,7 @@ download () {
     start=$SECONDS
     echo ::group::"Download HDF5 $VERSION"
 
-    curl -s https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-$VERSION_SHORT/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz -o hdf5-$HDF5_VERSION.tar.gz
+    curl -sf https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-$VERSION_SHORT/hdf5-$HDF5_VERSION/src/hdf5-$HDF5_VERSION.tar.gz -o hdf5-$HDF5_VERSION.tar.gz
     tar -xzvf hdf5-$VERSION.tar.gz
 
     echo ::endgroup::

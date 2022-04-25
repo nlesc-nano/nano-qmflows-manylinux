@@ -7,7 +7,7 @@ download () {
     start=$SECONDS
     echo ::group::"Download HighFive $VERSION"
 
-    curl -Ls https://github.com/BlueBrain/HighFive/archive/refs/tags/v$VERSION.tar.gz -o highfive-$VERSION.tar.gz
+    curl -Lsf https://github.com/BlueBrain/HighFive/archive/refs/tags/v$VERSION.tar.gz -o highfive-$VERSION.tar.gz
     tar -xf highfive-$VERSION.tar.gz
 
     echo ::endgroup::

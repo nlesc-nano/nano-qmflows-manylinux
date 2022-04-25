@@ -7,7 +7,7 @@ download () {
     start=$SECONDS
     echo ::group::"Download Eigen $VERSION"
 
-    curl -s https://gitlab.com/libeigen/eigen/-/archive/$VERSION/eigen-$VERSION.tar.gz -o eigen-$EIGEN_VERSION.tar.gz
+    curl -fs https://gitlab.com/libeigen/eigen/-/archive/$VERSION/eigen-$VERSION.tar.gz -o eigen-$EIGEN_VERSION.tar.gz
     tar -xf eigen-$VERSION.tar.gz
 
     echo ::endgroup::

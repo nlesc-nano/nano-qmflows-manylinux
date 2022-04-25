@@ -8,7 +8,7 @@ download () {
     start=$SECONDS
     echo ::group::"Download GMP $VERSION"
 
-    curl -Ls https://gmplib.org/download/gmp/gmp-$VERSION.tar.xz -o gmp-$VERSION.tar.xz
+    curl -Lsf https://gmplib.org/download/gmp/gmp-$VERSION.tar.xz -o gmp-$VERSION.tar.xz
     tar -xf gmp-$VERSION.tar.xz
 
     echo ::endgroup::

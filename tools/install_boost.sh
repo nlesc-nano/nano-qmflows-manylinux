@@ -8,7 +8,7 @@ download () {
     start=$SECONDS
     echo ::group::"Download boost $VERSION"
 
-    curl -Ls https://boostorg.jfrog.io/artifactory/main/release/$VERSION/source/boost_$VERSION_UNDERSCORE.tar.gz -o boost_$VERSION_UNDERSCORE.tar.gz
+    curl -Lsf https://boostorg.jfrog.io/artifactory/main/release/$VERSION/source/boost_$VERSION_UNDERSCORE.tar.gz -o boost_$VERSION_UNDERSCORE.tar.gz
     tar -xf boost_$VERSION_UNDERSCORE.tar.gz
 
     echo ::endgroup::

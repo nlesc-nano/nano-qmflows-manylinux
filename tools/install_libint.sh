@@ -8,7 +8,7 @@ download () {
     start=$SECONDS
     echo ::group::"Download Libint $VERSION"
 
-    curl -Ls https://github.com/evaleev/libint/archive/refs/tags/v$VERSION.tar.gz -o libint-$VERSION.tar.gz
+    curl -Lsf https://github.com/evaleev/libint/archive/refs/tags/v$VERSION.tar.gz -o libint-$VERSION.tar.gz
     tar -xf libint-$VERSION.tar.gz
 
     echo ::endgroup::
