@@ -32,7 +32,7 @@ def main(output: "str | os.PathLike[str]") -> None:
             f"Auto-generated MacOS {MACOSX_DEPLOYMENT_TARGET} C++ build "
             f"dependencies ({datetime.datetime.now()})\n\n"
         )
-        f.write("Packages:\n\n")
+        f.write("Packages\n--------\n")
         for k, v in VERSION_DICT.items():
             f.write(f"- {k}: {v}\n")
 

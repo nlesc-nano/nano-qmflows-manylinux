@@ -23,7 +23,11 @@ configure () {
     mkdir -p "$PREFIX"
     pushd hdf5-$VERSION
     chmod u+rx autogen.sh
-    ./configure --prefix="$PREFIX" --enable-build-mode=production
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        ./configure --prefix="$PREFIX" --enable-build-mode=production --libdir="/usr/local/lib"
+    else
+        ./configure --prefix="$PREFIX" --enable-build-mode=production
+    fi
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"

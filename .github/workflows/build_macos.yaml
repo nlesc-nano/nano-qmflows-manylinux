@@ -62,9 +62,12 @@ jobs:
       run: |
         cp -r output/include/* /usr/local/include/
         bash tools/install_libint.sh $LIBINT_VERSION $PWD/output 2
+        cp /usr/local/lib/libint2* output/lib/
 
     - name: Install HDF5
-      run: bash tools/install_hdf5.sh $HDF5_VERSION $PWD/output 2
+      run: |
+        bash tools/install_hdf5.sh $HDF5_VERSION $PWD/output 2
+        cp /usr/local/lib/libhdf5* output/lib/
 
     - name: Commit output
       run: |
