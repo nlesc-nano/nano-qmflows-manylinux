@@ -1,4 +1,4 @@
-set -euo pipefail
+set -euo
 
 VERSION="$1"
 VERSION_SHORT="${HDF5_VERSION%.*}"
@@ -23,11 +23,21 @@ configure () {
     mkdir -p "$PREFIX"
     pushd hdf5-$VERSION
     chmod u+rx autogen.sh
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        ./configure --prefix="$PREFIX" --enable-build-mode=production --libdir="/usr/local/lib"
-    else
-        ./configure --prefix="$PREFIX" --enable-build-mode=production
-    fi
+
+    {
+        set +euo
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            ./configure --prefix="$PREFIX" --enable-build-mode=production --libdir="/usr/local/lib"
+        else
+            ./configure --prefix="$PREFIX" --enable-build-mode=production
+        fi
+        set -euo
+    } || {
+        cat config.log
+        echo ::endgroup::
+        printf "%71.71s\n" "✕ $(($SECONDS - $start))s"
+        exit $?
+    }
 
     echo ::endgroup::
     printf "%71.71s\n" "✓ $(($SECONDS - $start))s"
