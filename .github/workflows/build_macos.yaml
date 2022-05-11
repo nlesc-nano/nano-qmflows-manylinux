@@ -13,22 +13,26 @@ defaults:
 
 jobs:
   build:
-    name: Build MacOS dependencies
+    name: Build MacOS x86_64 dependencies
     runs-on: macos-10.15
     env:
       MACOSX_DEPLOYMENT_TARGET: "10.14"
-      HIGHFIVE_VERSION: "2.3.1"
-      BOOST_VERSION: "1.78.0"
+      HIGHFIVE_VERSION: "2.4.1"
+      BOOST_VERSION: "1.79.0"
       EIGEN_VERSION: "3.4.0"
-      HDF5_VERSION: "1.12.1"
-      LIBINT_VERSION: "2.6.0"
+      HDF5_VERSION: "1.12.2"
+      LIBINT_VERSION: "2.7.1"
+      CC: "/usr/bin/clang"
+      CXX: "/usr/bin/clang++"
 
     steps:
     - uses: actions/checkout@v3
 
-
     - name: Set up Python
       uses: actions/setup-python@v3
+
+    - name: Install dependencies
+      run: pip install -e .
 
     - name: Python info
       run: |
@@ -40,9 +44,9 @@ jobs:
 
     - name: Create output directories
       run: |
-        mkdir -p output/lib
-        mkdir -p output/bin
-        mkdir -p output/include
+        mkdir -p macos_x86_64/lib
+        mkdir -p macos_x86_64/bin
+        mkdir -p macos_x86_64/include
 
     - name: Install Automake
       run: |
@@ -50,36 +54,74 @@ jobs:
         brew install automake
 
     - name: Install HighFive
-      run: bash tools/install_highfive.sh $HIGHFIVE_VERSION $PWD/output
+      run: python tools/install_highfive.py $HIGHFIVE_VERSION --prefix=$PWD/macos_x86_64
 
     - name: Install Boost
-      run: bash tools/install_boost.sh $BOOST_VERSION $PWD/output
+      run: python tools/install_boost.py $BOOST_VERSION --prefix=$PWD/macos_x86_64
 
     - name: Install Eigen
-      run: bash tools/install_eigen.sh $EIGEN_VERSION $PWD/output
-
-    - name: Install Libint
-      run: |
-        cp -r output/include/* /usr/local/include/
-        bash tools/install_libint.sh $LIBINT_VERSION $PWD/output 2
-        cp /usr/local/lib/libint2* output/lib/
+      run: python tools/install_eigen.py $EIGEN_VERSION --prefix=$PWD/macos_x86_64
 
     - name: Install HDF5
       run: |
-        bash tools/install_hdf5.sh $HDF5_VERSION $PWD/output 2
-        cp /usr/local/lib/libhdf5* output/lib/
+        export CFLAGS="$CFLAGS -arch x86_64"
+        export CPPFLAGS="$CPPFLAGS -arch x86_64"
+        export CXXFLAGS="$CXXFLAGS -arch x86_64 -std=c++11"
+        export MACOSX_DEPLOYMENT_TARGET="10.14"
+
+        python tools/install_hdf5.py $HDF5_VERSION --prefix=$PWD/macos_x86_64 --libdir=/usr/local/lib
+        cp /usr/local/lib/libhdf5* macos_x86_64/lib/
+
+    - name: Install Libint
+      run: |
+        export CFLAGS="$CFLAGS -arch x86_64"
+        export CPPFLAGS="$CPPFLAGS -arch x86_64"
+        export CXXFLAGS="$CXXFLAGS -arch x86_64"
+        export MACOSX_DEPLOYMENT_TARGET="10.14"
+
+        cp -r macos_x86_64/include/* /usr/local/include/
+        python tools/install_libint.py $LIBINT_VERSION --prefix=$PWD/macos_x86_64 --libdir=/usr/local/lib
+        cp /usr/local/lib/libint2* macos_x86_64/lib/
+
+    - name: Create archive
+      run: tar -czvf macos_x86_64.tar.gz macos_x86_64
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: deps
+        path: macos_x86_64.tar.gz
+
+  commit:
+    name: Commit output to main
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref_name == 'main'
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@v3
+
+    - name: Python info
+      run: |
+        which python
+        python --version
+
+    - name: Installed packages
+      run: pip list
+
+    - uses: actions/download-artifact@v3
+      with:
+        name: deps
+        path: tmp/
 
     - name: Commit output
       run: |
-        git switch main
-
         rm macos/README.rst
-        rm macos/macos_deps.tar.gz
-        tar -czvf macos/macos_deps.tar.gz output
+        rm macos/*.tar.gz
+        cp tmp/macos_x86_64.tar.gz macos/macos_x86_64.tar.gz
         python tools/construct_readme.py macos/README.rst
 
         COMMIT_MSG=$(cat macos/README.rst)
         git add macos/README.rst
-        git add macos/macos_deps.tar.gz
+        git add macos/macos_x86_64.tar.gz
         git commit -m "$COMMIT_MSG"
         git push

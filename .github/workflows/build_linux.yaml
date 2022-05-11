@@ -21,18 +21,18 @@ defaults:
 
 jobs:
   build_image:
-    name: Build ${{ matrix.arch }} image
+    name: Build ${{ matrix.platform }} image
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        arch: [x86_64, aarch64]
+        platform: [manylinux2014_x86_64, manylinux2014_aarch64]
 
     steps:
     - uses: actions/checkout@v3
 
     - name: Set up QEMU
-      if: matrix.arch == 'aarch64'
+      if: matrix.platform == 'manylinux2014_aarch64'
       uses: docker/setup-qemu-action@v1
       with:
         platforms: arm64
@@ -41,6 +41,8 @@ jobs:
       uses: matootie/github-docker@v3.1.0
       with:
         accessToken: ${{ secrets.GITHUB_TOKEN }}
-        imageName: manylinux2014_${{ matrix.arch }}-qmflows
+        imageName: ${{ matrix.platform }}-qmflows
         containerRegistry: true
-        contextName: ./${{ matrix.arch }}.dockerfile
+        contextName: ./manylinux2014.dockerfile
+        buildArgs: |
+          PLATFORM=${{ matrix.platform }}
