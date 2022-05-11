@@ -21,7 +21,7 @@ jobs:
       BOOST_VERSION: "1.78.0"
       EIGEN_VERSION: "3.4.0"
       HDF5_VERSION: "1.12.1"
-      LIBINT_VERSION: "2.6.0"
+      LIBINT_VERSION: "2.7.1"
       GMP_VERSION: "6.2.1"
       CC: "/usr/bin/clang"
       CXX: "/usr/bin/clang++"
