@@ -13,20 +13,91 @@ defaults:
 
 jobs:
   build:
-    name: Build MacOS dependencies
-    runs-on: macos-10.15
+    name: Build MacOS ${{ matrix.platform[0] }} dependencies
+    runs-on: macos-latest
     env:
-      MACOSX_DEPLOYMENT_TARGET: "10.14"
       HIGHFIVE_VERSION: "2.3.1"
       BOOST_VERSION: "1.78.0"
       EIGEN_VERSION: "3.4.0"
       HDF5_VERSION: "1.12.1"
       LIBINT_VERSION: "2.6.0"
-
+      GMP_VERSION: "6.2.1"
+      CC: "/usr/bin/clang"
+      CXX: "/usr/bin/clang"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - ["x86_64", "10.14"]
+          - ["arm64", "11.0"]
     steps:
     - uses: actions/checkout@v3
 
+    - name: Create output directories
+      run: |
+        mkdir -p macos_${{ matrix.platform[0] }}_deps/lib
+        mkdir -p macos_${{ matrix.platform[0] }}_deps/bin
+        mkdir -p macos_${{ matrix.platform[0] }}_deps/include
 
+    - name: Install brew dependencies
+      run: |
+        brew update
+        brew install automake
+
+    - name: Install HighFive
+      run: bash tools/install_highfive.sh $HIGHFIVE_VERSION $PWD/macos_${{ matrix.platform[0] }}_deps
+
+    - name: Install Boost
+      run: bash tools/install_boost.sh $BOOST_VERSION $PWD/macos_${{ matrix.platform[0] }}_deps
+
+    - name: Install Eigen
+      run: bash tools/install_eigen.sh $EIGEN_VERSION $PWD/macos_${{ matrix.platform[0] }}_deps
+
+    - name: Install GMP
+      run: |
+        export CFLAGS="$CFLAGS -arch ${{ matrix.platform[0] }}"
+        export CPPFLAGS="$CPPFLAGS -arch ${{ matrix.platform[0] }}"
+        export CXXFLAGS="$CXXFLAGS -arch ${{ matrix.platform[0] }}"
+        export MACOSX_DEPLOYMENT_TARGET=${{ matrix.platform[1] }}
+
+        bash tools/install_gmp.sh $GMP_VERSION /usr/local 2
+
+    - name: Install Libint
+      run: |
+        export CFLAGS="$CFLAGS -arch ${{ matrix.platform[0] }}"
+        export CPPFLAGS="$CPPFLAGS -arch ${{ matrix.platform[0] }}"
+        export CXXFLAGS="$CXXFLAGS -arch ${{ matrix.platform[0] }}"
+        export MACOSX_DEPLOYMENT_TARGET=${{ matrix.platform[1] }}
+
+        cp -r macos_${{ matrix.platform[0] }}_deps/include/* /usr/local/include/
+        bash tools/install_libint.sh $LIBINT_VERSION $PWD/macos_${{ matrix.platform[0] }}_deps 2
+        cp /usr/local/lib/libint2* macos_${{ matrix.platform[0] }}_deps/lib/
+
+    - name: Install HDF5
+      run: |
+        export CFLAGS="$CFLAGS -arch ${{ matrix.platform[0] }}"
+        export CPPFLAGS="$CPPFLAGS -arch ${{ matrix.platform[0] }}"
+        export CXXFLAGS="$CXXFLAGS -arch ${{ matrix.platform[0] }} -std=c++11"
+        export MACOSX_DEPLOYMENT_TARGET=${{ matrix.platform[1] }}
+
+        bash tools/install_hdf5.sh $HDF5_VERSION $PWD/macos_${{ matrix.platform[0] }}_deps 2
+        cp /usr/local/lib/libhdf5* macos_${{ matrix.platform[0] }}_deps/lib/
+
+    - name: Create archive
+      run: |
+        tar -czvf macos_${{ matrix.platform[0] }}_deps.tar.gz macos_${{ matrix.platform[0] }}_deps
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: deps
+        path: macos_${{ matrix.platform[0] }}_deps.tar.gz
+
+  commit:
+    name: Commit output to main
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref_name == 'main'
+    steps:
     - name: Set up Python
       uses: actions/setup-python@v3
 
@@ -38,48 +109,20 @@ jobs:
     - name: Installed packages
       run: pip list
 
-    - name: Create output directories
-      run: |
-        mkdir -p output/lib
-        mkdir -p output/bin
-        mkdir -p output/include
-
-    - name: Install Automake
-      run: |
-        brew update
-        brew install automake
-
-    - name: Install HighFive
-      run: bash tools/install_highfive.sh $HIGHFIVE_VERSION $PWD/output
-
-    - name: Install Boost
-      run: bash tools/install_boost.sh $BOOST_VERSION $PWD/output
-
-    - name: Install Eigen
-      run: bash tools/install_eigen.sh $EIGEN_VERSION $PWD/output
-
-    - name: Install Libint
-      run: |
-        cp -r output/include/* /usr/local/include/
-        bash tools/install_libint.sh $LIBINT_VERSION $PWD/output 2
-        cp /usr/local/lib/libint2* output/lib/
-
-    - name: Install HDF5
-      run: |
-        bash tools/install_hdf5.sh $HDF5_VERSION $PWD/output 2
-        cp /usr/local/lib/libhdf5* output/lib/
+    - uses: actions/download-artifact@v3
+      with:
+        name: deps
+        path: ./macos/*.tar.gz
 
     - name: Commit output
       run: |
-        git switch main
-
         rm macos/README.rst
-        rm macos/macos_deps.tar.gz
-        tar -czvf macos/macos_deps.tar.gz output
+        rm macos/*.tar.gz
         python tools/construct_readme.py macos/README.rst
 
         COMMIT_MSG=$(cat macos/README.rst)
         git add macos/README.rst
-        git add macos/macos_deps.tar.gz
+        git add macos/macos_x86_64_deps.tar.gz
+        git add macos/macos_arm64_deps.tar.gz
         git commit -m "$COMMIT_MSG"
         git push
