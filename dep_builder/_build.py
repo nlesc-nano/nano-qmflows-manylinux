@@ -18,8 +18,7 @@ def configure(
     config_path = os.path.join(src_path, "configure")
     os.chmod(config_path, stat.S_IRUSR | stat.S_IXUSR)
 
-    args = [config_path, *config_args]
-    cmd = " ".join(args)
+    cmd = " ".join(config_path, *config_args)
     logger.info(cmd)
 
     os.mkdir(build_path)

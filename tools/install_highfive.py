@@ -31,8 +31,8 @@ def main(version: str, prefix: str | None = None) -> None:
         src_path = download_highfive(url)
         if prefix is not None:
             shutil.move(
-                os.path.join(src_path, "include"),
-                os.path.join(prefix, "include"),
+                os.path.join(src_path, "include", "highfive"),
+                os.path.join(prefix, "include", "highfive"),
             )
     finally:
         if src_path is not None:
