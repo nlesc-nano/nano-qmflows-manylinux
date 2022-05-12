@@ -100,6 +100,8 @@ jobs:
     needs: [build]
     if: github.ref_name == 'main'
     steps:
+    - uses: actions/checkout@v3
+
     - name: Set up Python
       uses: actions/setup-python@v3
 
