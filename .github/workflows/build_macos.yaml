@@ -13,17 +13,29 @@ defaults:
 
 jobs:
   build:
-    name: Build MacOS x86_64 dependencies
-    runs-on: macos-10.15
+    name: Build MacOS ${{ matrix.arch[0] }} dependencies
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - ["x86_64", "10.14"]
+          # - ["arm64", "11.0"]  TODO
     env:
-      MACOSX_DEPLOYMENT_TARGET: "10.14"
       HIGHFIVE_VERSION: "2.4.1"
       BOOST_VERSION: "1.79.0"
       EIGEN_VERSION: "3.4.0"
       HDF5_VERSION: "1.12.2"
       LIBINT_VERSION: "2.7.1"
+
       CC: "/usr/bin/clang"
       CXX: "/usr/bin/clang++"
+      CFLAGS: "-arch ${{ matrix.arch[0] }}"
+      CPPFLAGS: "-arch ${{ matrix.arch[0] }}"
+      CXXFLAGS: "-arch ${{ matrix.arch[0] }}"
+      MACOSX_DEPLOYMENT_TARGET: "${{ matrix.arch[1] }}"
+
+      PREFIX: ${{github.workspace}}/macos_${{ matrix.arch[0] }}
 
     steps:
     - uses: actions/checkout@v3
@@ -44,9 +56,9 @@ jobs:
 
     - name: Create output directories
       run: |
-        mkdir -p macos_x86_64/lib
-        mkdir -p macos_x86_64/bin
-        mkdir -p macos_x86_64/include
+        mkdir -p $PREFIX/lib
+        mkdir -p $PREFIX/bin
+        mkdir -p $PREFIX/include
 
     - name: Install Automake
       run: |
@@ -54,42 +66,33 @@ jobs:
         brew install automake
 
     - name: Install HighFive
-      run: python tools/install_highfive.py $HIGHFIVE_VERSION --prefix=$PWD/macos_x86_64
+      run: python tools/install_highfive.py $HIGHFIVE_VERSION --prefix=$PREFIX
 
     - name: Install Boost
-      run: python tools/install_boost.py $BOOST_VERSION --prefix=$PWD/macos_x86_64
+      run: python tools/install_boost.py $BOOST_VERSION --prefix=$PREFIX
 
     - name: Install Eigen
-      run: python tools/install_eigen.py $EIGEN_VERSION --prefix=$PWD/macos_x86_64
+      run: python tools/install_eigen.py $EIGEN_VERSION --prefix=$PREFIX
 
     - name: Install HDF5
       run: |
-        export CFLAGS="$CFLAGS -arch x86_64"
-        export CPPFLAGS="$CPPFLAGS -arch x86_64"
-        export CXXFLAGS="$CXXFLAGS -arch x86_64 -std=c++11"
-        export MACOSX_DEPLOYMENT_TARGET="10.14"
-
-        python tools/install_hdf5.py $HDF5_VERSION --prefix=$PWD/macos_x86_64 --libdir=/usr/local/lib
-        cp /usr/local/lib/libhdf5* macos_x86_64/lib/
+        export CXXFLAGS="$CXXFLAGS -std=c++11"
+        python tools/install_hdf5.py $HDF5_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
+        cp /usr/local/lib/libhdf5* $PREFIX/lib/
 
     - name: Install Libint
       run: |
-        export CFLAGS="$CFLAGS -arch x86_64"
-        export CPPFLAGS="$CPPFLAGS -arch x86_64"
-        export CXXFLAGS="$CXXFLAGS -arch x86_64"
-        export MACOSX_DEPLOYMENT_TARGET="10.14"
-
-        cp -r macos_x86_64/include/* /usr/local/include/
-        python tools/install_libint.py $LIBINT_VERSION --prefix=$PWD/macos_x86_64 --libdir=/usr/local/lib
-        cp /usr/local/lib/libint2* macos_x86_64/lib/
+        cp -r $PREFIX/include/* /usr/local/include/
+        python tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
+        cp /usr/local/lib/libint2* $PREFIX/lib/
 
     - name: Create archive
-      run: tar -czvf macos_x86_64.tar.gz macos_x86_64
+      run: tar -czvf $PREFIX.tar.gz $PREFIX
 
     - uses: actions/upload-artifact@v3
       with:
         name: deps
-        path: macos_x86_64.tar.gz
+        path: $PREFIX.tar.gz
 
   commit:
     name: Commit output to main
@@ -117,11 +120,11 @@ jobs:
       run: |
         rm macos/README.rst
         rm macos/*.tar.gz
-        cp tmp/macos_x86_64.tar.gz macos/macos_x86_64.tar.gz
+        cp tmp/*.tar.gz macos/*
         python tools/construct_readme.py macos/README.rst
 
         COMMIT_MSG=$(cat macos/README.rst)
         git add macos/README.rst
-        git add macos/macos_x86_64.tar.gz
+        git add macos/*.tar.gz
         git commit -m "$COMMIT_MSG"
         git push
