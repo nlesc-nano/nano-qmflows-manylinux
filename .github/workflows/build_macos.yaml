@@ -92,7 +92,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: deps
-        path: $PREFIX.tar.gz
+        path: macos_*.tar.gz
 
   commit:
     name: Commit output to main
