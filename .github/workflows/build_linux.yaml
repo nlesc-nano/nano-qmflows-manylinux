@@ -40,6 +40,6 @@ jobs:
         contextName: ./manylinux2014.dockerfile
         tag: |
           latest
-          ${{ github.ref }}
+          ${{ github.ref_name }}
         buildArgs: |
           PLATFORM=${{ matrix.platform }}
