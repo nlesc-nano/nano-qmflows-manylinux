@@ -128,6 +128,7 @@ jobs:
         python tools/construct_readme.py macos/README.rst
 
         COMMIT_MSG=$(cat macos/README.rst)
+        git config user.name "nano-qmflows-manylinux"
         git add macos/README.rst
         git add macos/*.tar.gz
         git commit -m "$COMMIT_MSG"
