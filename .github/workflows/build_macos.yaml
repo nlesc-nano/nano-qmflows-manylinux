@@ -125,12 +125,12 @@ jobs:
         ls -l /tmp
         rm -f macos/README.rst
         rm -f macos/*.tar.gz
-        cp tmp/*.tar.gz macos/*
+        cp /tmp/*.tar.gz macos/*
         python tools/construct_readme.py macos/README.rst
 
         COMMIT_MSG=$(cat macos/README.rst)
         git config user.name "nano-qmflows-manylinux"
         git add macos/README.rst
-        git add macos/macos_x86.tar.gz
+        git add macos/*.tar.gz
         git commit -m "$COMMIT_MSG"
         git push
