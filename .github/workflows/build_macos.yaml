@@ -89,48 +89,9 @@ jobs:
         cp /usr/local/lib/libint2* $PREFIX/lib/
 
     - name: Create archive
-      run: tar -czvf $PREFIX.tar.gz $PREFIX
+      run: tar -czvf macos_${{ matrix.arch[0] }}.tar.gz $PREFIX
 
     - uses: actions/upload-artifact@v3
       with:
         name: deps
         path: macos_*.tar.gz
-
-  commit:
-    name: Commit output to main
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: github.ref_name == 'main'
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v3
-
-    - name: Python info
-      run: |
-        which python
-        python --version
-
-    - name: Installed packages
-      run: pip list
-
-    - uses: actions/download-artifact@v3
-      with:
-        name: deps
-        path: /tmp/
-
-    - name: Commit output
-      run: |
-        ls -l /tmp
-        rm -f macos/README.rst
-        rm -f macos/*.tar.gz
-        mv /tmp/macos_x86_64.tar.gz macos/
-        python tools/construct_readme.py macos/README.rst
-
-        COMMIT_MSG=$(cat macos/README.rst)
-        git config user.name "nano-qmflows-manylinux"
-        git add macos/README.rst
-        git add macos/macos_x86_64.tar.gz
-        git commit -m "$COMMIT_MSG"
-        git push
