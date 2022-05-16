@@ -50,7 +50,7 @@ def configure(
     build_path: str | os.PathLike[str] = "build",
     config_args: Iterable[str] = (),
 ) -> None:
-    """Run the ``configure`` executable from the passed source path.""""
+    """Run the ``configure`` executable from the passed source path."""
     config_path = os.path.join(src_path, "configure")
     os.chmod(config_path, stat.S_IRUSR | stat.S_IXUSR)
 
@@ -65,7 +65,7 @@ def read_config_log(
     build_path: str | os.PathLike[str] = "build",
     log_name: str | os.PathLike[str] = "config.log",
 ) -> None:
-    """"Write the ``./configure`` output to the logger."""
+    """Write the ``./configure`` output to the logger."""
     log_file = os.path.join(build_path, log_name)
     if not os.path.isfile(log_file):
         logger.debug(f"No such file: {log_file!r}")
