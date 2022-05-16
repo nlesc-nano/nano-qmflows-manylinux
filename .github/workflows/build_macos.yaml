@@ -39,7 +39,7 @@ jobs:
       CPPFLAGS: "-arch ${{ matrix.arch[0] }}"
       CXXFLAGS: "-std=c++11 -arch ${{ matrix.arch[0] }}"
 
-      PREFIX: ${{github.workspace}}/macos_${{ matrix.arch[0] }}
+      PREFIX: ${{github.workspace}}/macosx_${{ matrix.arch[0] }}
       HOST: "${{ matrix.arch[0] }}-apple-darwin${{ matrix.arch[1] }}"
 
     steps:
@@ -91,12 +91,12 @@ jobs:
         cp /usr/local/lib/libint2* $PREFIX/lib/
 
     - name: Create archive
-      run: tar -czvf macos_${{ matrix.arch[0] }}.tar.gz $PREFIX
+      run: tar -czvf $PREFIX.tar.gz macosx_${{ matrix.arch[0] }}
 
     - uses: actions/upload-artifact@v3
       with:
         name: deps
-        path: macos_*.tar.gz
+        path: macosx_*.tar.gz
 
   upload_wheels:
     name: Attach artifacts to release
