@@ -24,7 +24,7 @@ setup(
     license="GNU Lesser General Public License v3 or later",
     zip_safe=False,
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
         "Natural Language :: English",

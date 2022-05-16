@@ -1,7 +1,8 @@
+"""Utilities for building (and logging) packages."""
+
 from ._version import __version__
 from ._logger import logger, TimeLogger
-from ._archive import download_and_unpack
-from ._build import configure, read_config_log, build
+from ._core import download_and_unpack, configure, read_config_log, build
 
 __all__ = [
     "__version__",
