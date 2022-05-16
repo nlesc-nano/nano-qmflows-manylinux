@@ -122,6 +122,7 @@ jobs:
 
     - name: Commit output
       run: |
+        ls -l /tmp
         rm macos/README.rst
         rm macos/*.tar.gz
         cp tmp/*.tar.gz macos/*
@@ -130,6 +131,6 @@ jobs:
         COMMIT_MSG=$(cat macos/README.rst)
         git config user.name "nano-qmflows-manylinux"
         git add macos/README.rst
-        git add macos/*.tar.gz
+        git add macos/macos_x86.tar.gz
         git commit -m "$COMMIT_MSG"
         git push
