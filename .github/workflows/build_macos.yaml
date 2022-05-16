@@ -85,7 +85,7 @@ jobs:
     - name: Install Libint
       run: |
         cp -r $PREFIX/include/* /usr/local/include/
-        python tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib --host=$HOST
+        python tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib --host=$HOST --target=$HOST
         cp /usr/local/lib/libint2* $PREFIX/lib/
 
     - name: Create archive
@@ -125,12 +125,12 @@ jobs:
         ls -l /tmp
         rm -f macos/README.rst
         rm -f macos/*.tar.gz
-        cp /tmp/*.tar.gz macos/*
+        mv /tmp/macos_x86_64.tar.gz macos/
         python tools/construct_readme.py macos/README.rst
 
         COMMIT_MSG=$(cat macos/README.rst)
         git config user.name "nano-qmflows-manylinux"
         git add macos/README.rst
-        git add macos/*.tar.gz
+        git add macos/macos_x86_64.tar.gz
         git commit -m "$COMMIT_MSG"
         git push
