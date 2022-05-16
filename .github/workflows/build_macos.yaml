@@ -11,6 +11,13 @@ defaults:
   run:
     shell: bash
 
+env:
+  HIGHFIVE_VERSION: "2.4.1"
+  BOOST_VERSION: "1.79.0"
+  EIGEN_VERSION: "3.4.0"
+  HDF5_VERSION: "1.12.2"
+  LIBINT_VERSION: "2.7.1"
+
 jobs:
   build:
     name: Build MacOS ${{ matrix.arch[0] }} dependencies
@@ -19,23 +26,19 @@ jobs:
       fail-fast: false
       matrix:
         arch:
-          - ["x86_64", "10.14"]
-          # - ["arm64", "11.0"]  TODO
+          # [<architecture>, <min darwin version>]
+          - ["x86_64", "18"]
     env:
-      HIGHFIVE_VERSION: "2.4.1"
-      BOOST_VERSION: "1.79.0"
-      EIGEN_VERSION: "3.4.0"
-      HDF5_VERSION: "1.12.2"
-      LIBINT_VERSION: "2.7.1"
+      DARWIN_VERSION: "${{ matrix.arch[1] }}"
 
       CC: "/usr/bin/clang"
       CXX: "/usr/bin/clang++"
       CFLAGS: "-arch ${{ matrix.arch[0] }}"
       CPPFLAGS: "-arch ${{ matrix.arch[0] }}"
-      CXXFLAGS: "-arch ${{ matrix.arch[0] }}"
-      MACOSX_DEPLOYMENT_TARGET: "${{ matrix.arch[1] }}"
+      CXXFLAGS: "-std=c++11 -arch ${{ matrix.arch[0] }}"
 
       PREFIX: ${{github.workspace}}/macos_${{ matrix.arch[0] }}
+      HOST: "${{ matrix.arch[0] }}-apple-darwin${{ matrix.arch[1] }}"
 
     steps:
     - uses: actions/checkout@v3
@@ -76,14 +79,13 @@ jobs:
 
     - name: Install HDF5
       run: |
-        export CXXFLAGS="$CXXFLAGS -std=c++11"
-        python tools/install_hdf5.py $HDF5_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
+        python tools/install_hdf5.py $HDF5_VERSION --prefix=$PREFIX --libdir=/usr/local/lib --host=$HOST
         cp /usr/local/lib/libhdf5* $PREFIX/lib/
 
     - name: Install Libint
       run: |
         cp -r $PREFIX/include/* /usr/local/include/
-        python tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
+        python tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib --host=$HOST
         cp /usr/local/lib/libint2* $PREFIX/lib/
 
     - name: Create archive
