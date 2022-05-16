@@ -118,13 +118,13 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: deps
-        path: tmp/
+        path: /tmp/
 
     - name: Commit output
       run: |
         ls -l /tmp
-        rm macos/README.rst
-        rm macos/*.tar.gz
+        rm -f macos/README.rst
+        rm -f macos/*.tar.gz
         cp tmp/*.tar.gz macos/*
         python tools/construct_readme.py macos/README.rst
 
