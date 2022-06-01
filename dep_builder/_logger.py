@@ -25,14 +25,18 @@ logger.addHandler(stdout_handler)
 
 
 class TimeLogger(contextlib.ContextDecorator):
-    __slots__ = ("message", "_start")
+    __slots__ = ("_message", "_start")
 
     GREEN: ClassVar = "\033[32m"
     RED: ClassVar = "\033[31m"
     logger: ClassVar = logger
 
+    @property
+    def message(self) -> None | str:
+        return self._message
+
     def __init__(self, message: None | str = None) -> None:
-        self.message = message
+        self._message = message
 
     def __enter__(self) -> None:
         self._start = time.time()
@@ -48,7 +52,8 @@ class TimeLogger(contextlib.ContextDecorator):
         exc_traceback: types.TracebackType | None
     ) -> None:
         duration = time.time() - self._start
-        sys.stdout.flush()
+        for handler in self.logger.handlers:
+            handler.flush()
         self.logger.info("\n::endgroup::")
         if exc_type is None:
             self.logger.info(f"{self.GREEN}✓ {duration:.2f}s".rjust(78))
@@ -63,6 +68,9 @@ class TimeLogger(contextlib.ContextDecorator):
         if not isinstance(other, TimeLogger):
             return NotImplemented
         return self.logger == other.logger and self.message == other.message
+
+    def __hash__(self) -> int:
+        return hash(self.logger) ^ hash(self.message)
 
     def __reduce__(self: _Self) -> tuple[type[_Self], tuple[str | None]]:
         cls = type(self)
