@@ -10,10 +10,18 @@ from collections.abc import Iterable
 from pathlib import Path
 
 import requests
+from packaging.version import Version
 
 from . import logger
 
-__all__ = ["download_and_unpack", "configure", "read_config_log", "build"]
+__all__ = ["download_and_unpack", "configure", "read_config_log", "build", "parse_version"]
+
+
+def parse_version(version: str) -> Version:
+    """Check that a PEP 440-compliant version is provided."""
+    ret = Version(version)
+    logger.info(f"Successfully parsed {version!r}")
+    return ret
 
 
 def download_and_unpack(

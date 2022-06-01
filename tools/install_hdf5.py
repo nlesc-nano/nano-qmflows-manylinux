@@ -7,8 +7,7 @@ import os
 import argparse
 from pathlib import Path
 
-from packaging.version import Version
-from dep_builder import logger, TimeLogger, download_and_unpack, configure, read_config_log, build
+from dep_builder import TimeLogger, download_and_unpack, configure, read_config_log, build, parse_version
 
 URL_TEMPLATE = "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-{version_short}/hdf5-{version}/src/hdf5-{version}.tar.gz"
 
@@ -16,20 +15,13 @@ download_hdf5 = TimeLogger("Download and unpack HDF5")(download_and_unpack)
 read_config_log_hdf5 = TimeLogger("Dumping HDF5 config log")(read_config_log)
 build_hdf5 = TimeLogger("Build HDF5")(build)
 configure_hdf5 = TimeLogger("Configure HDF5")(configure)
-
-
-@TimeLogger("Parsing HDF5 version")
-def parse_version(version: str) -> tuple[str, str]:
-    """Parse and validate the HDF5 version."""
-    version_obj = Version(version)
-    version_short = f"{version_obj.release[0]}.{version_obj.release[1]}"
-    logger.info(f"Successfully parsed {version!r}")
-    return version, version_short
+parse_hdf5_version = TimeLogger("Parsing HDF5 version")(parse_version)
 
 
 def main(version: str, args: list[str]) -> None:
     """Run the script."""
-    version, version_short = parse_version(version)
+    version_obj = parse_hdf5_version(version)
+    version_short = f"{version_obj.release[0]}.{version_obj.release[1]}"
     url = URL_TEMPLATE.format(version=version, version_short=version_short)
 
     src_path: None | Path = None

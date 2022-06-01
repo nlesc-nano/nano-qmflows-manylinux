@@ -7,23 +7,17 @@ import os
 import argparse
 from pathlib import Path
 
-from packaging.version import Version
-from dep_builder import logger, TimeLogger, download_and_unpack
+from dep_builder import logger, TimeLogger, download_and_unpack, parse_version
 
 URL_TEMPLATE = "https://github.com/BlueBrain/HighFive/archive/refs/tags/v{version}.tar.gz"
 
 download_highfive = TimeLogger("Download and unpack HighFive")(download_and_unpack)
-
-
-@TimeLogger("Parsing HighFive version")
-def parse_version(version: str) -> None:
-    Version(version)
-    logger.info(f"Successfully parsed {version!r}")
+parse_highfive_version = TimeLogger("Parsing HighFive version")(parse_version)
 
 
 def main(version: str, prefix: str | None = None) -> None:
     """Run the script."""
-    parse_version(version)
+    parse_highfive_version(version)
     url = URL_TEMPLATE.format(version=version)
 
     src_path: None | Path = None

@@ -7,23 +7,17 @@ import os
 import argparse
 from pathlib import Path
 
-from packaging.version import Version
-from dep_builder import logger, TimeLogger, download_and_unpack
+from dep_builder import TimeLogger, download_and_unpack, parse_version
 
 URL_TEMPLATE = "https://gitlab.com/libeigen/eigen/-/archive/{version}/eigen-{version}.tar.gz"
 
 download_eigen = TimeLogger("Download and unpack Eigen")(download_and_unpack)
-
-
-@TimeLogger("Parsing Eigen version")
-def parse_version(version: str) -> None:
-    Version(version)
-    logger.info(f"Successfully parsed {version!r}")
+parse_eigen_version = TimeLogger("Parsing Eigen version")(parse_version)
 
 
 def main(version: str, prefix: str | None = None) -> None:
     """Run the script."""
-    parse_version(version)
+    parse_eigen_version(version)
     url = URL_TEMPLATE.format(version=version)
 
     src_path: None | Path = None

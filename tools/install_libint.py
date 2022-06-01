@@ -9,8 +9,7 @@ import stat
 import argparse
 from pathlib import Path
 
-from packaging.version import Version
-from dep_builder import logger, TimeLogger, download_and_unpack, configure, read_config_log, build
+from dep_builder import TimeLogger, download_and_unpack, configure, read_config_log, build, parse_version
 
 URL_TEMPLATE = "https://github.com/evaleev/libint/archive/refs/tags/v{version}.tar.gz"
 
@@ -18,12 +17,7 @@ download_libint = TimeLogger("Download and unpack Libint")(download_and_unpack)
 read_config_log_libint = TimeLogger("Dumping Libint config log")(read_config_log)
 build_libint = TimeLogger("Build Libint")(build)
 configure_libint = TimeLogger("Configure Libint")(configure)
-
-
-@TimeLogger("Parsing Libint version")
-def parse_version(version: str) -> None:
-    Version(version)
-    logger.info(f"Successfully parsed {version!r}")
+parse_libint_version = TimeLogger("Parsing Libint version")(parse_version)
 
 
 @TimeLogger("Run Libint autogen")
@@ -34,7 +28,7 @@ def run_autogen(src_path: str | os.PathLike[str]) -> None:
 
 def main(version: str, args: list[str]) -> None:
     """Run the script."""
-    parse_version(version)
+    parse_libint_version(version)
     url = URL_TEMPLATE.format(version=version)
 
     src_path: None | Path = None

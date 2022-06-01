@@ -7,8 +7,7 @@ import os
 import argparse
 from pathlib import Path
 
-from packaging.version import Version
-from dep_builder import logger, TimeLogger, download_and_unpack, configure, read_config_log, build
+from dep_builder import TimeLogger, download_and_unpack, configure, read_config_log, build, parse_version
 
 URL_TEMPLATE = "https://gmplib.org/download/gmp/gmp-{version}.tar.xz"
 
@@ -16,17 +15,12 @@ download_gmp = TimeLogger("Download and unpack GMP")(download_and_unpack)
 read_config_log_gmp = TimeLogger("Dumping GMP config log")(read_config_log)
 build_gmp = TimeLogger("Build GMP")(build)
 configure_gmp = TimeLogger("Configure GMP")(configure)
-
-
-@TimeLogger("Parsing GMP version")
-def parse_version(version: str) -> None:
-    Version(version)
-    logger.info(f"Successfully parsed {version!r}")
+parse_gmp_version = TimeLogger("Parsing GMP version")(parse_version)
 
 
 def main(version: str, args: list[str]) -> None:
     """Run the script."""
-    parse_version(version)
+    parse_gmp_version(version)
     url = URL_TEMPLATE.format(version=version)
 
     src_path: None | Path = None

@@ -7,25 +7,18 @@ import os
 import argparse
 from pathlib import Path
 
-from packaging.version import Version
-from dep_builder import logger, TimeLogger, download_and_unpack
+from dep_builder import TimeLogger, download_and_unpack, parse_version
 
 URL_TEMPLATE = "https://boostorg.jfrog.io/artifactory/main/release/{version}/source/boost_{version_underscore}.tar.gz"
 
 download_boost = TimeLogger("Download and unpack Boost")(download_and_unpack)
-
-
-@TimeLogger("Parsing Boost version")
-def parse_version(version: str) -> tuple[str, str]:
-    Version(version)
-    version_underscore = version.replace(".", "_")
-    logger.info(f"Successfully parsed {version!r}")
-    return version, version_underscore
+parse_boost_version = TimeLogger("Parsing Boost version")(parse_version)
 
 
 def main(version: str, prefix: str | None = None) -> None:
     """Run the script."""
-    version, version_underscore = parse_version(version)
+    parse_boost_version(version)
+    version_underscore = version.replace(".", "_")
     url = URL_TEMPLATE.format(version=version, version_underscore=version_underscore)
 
     src_path: None | Path = None
