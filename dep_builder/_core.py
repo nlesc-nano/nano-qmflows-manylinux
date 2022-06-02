@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import operator
 import tarfile
 import stat
 import os
@@ -47,7 +48,7 @@ def download_and_unpack(
             logger.info(f"Unpack archive {os.fspath(archive_path)!r} to {output_dir!r}")
             f2.extractall()
     finally:
-        if delete_archive:
+        if delete_archive and os.path.isfile(archive_path):
             os.remove(archive_path)
 
     return Path(os.getcwd()) / output_dir
@@ -87,6 +88,8 @@ def read_config_log(
 def build(build_path: str | os.PathLike[str], cpu_count: int | None = None) -> None:
     if cpu_count is None:
         cpu_count = os.cpu_count()
+    else:
+        cpu_count = operator.index(cpu_count)
 
     logger.info(f"Running 'make -j {cpu_count} && make install'")
     subprocess.run(f"make -j {cpu_count}", shell=True, cwd=build_path, check=True)
