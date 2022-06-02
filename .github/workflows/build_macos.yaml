@@ -22,25 +22,14 @@ env:
 
 jobs:
   build:
-    name: Build MacOS ${{ matrix.arch[0] }} dependencies
+    name: Build MacOS macosx_x86_64 dependencies
     runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        arch:
-          # [<architecture>, <min darwin version>]
-          - ["x86_64", "18"]
     env:
-      DARWIN_VERSION: "${{ matrix.arch[1] }}"
-
+      MACOSX_DEPLOYMENT_TARGET: "10.14"
       CC: "/usr/bin/clang"
       CXX: "/usr/bin/clang++"
-      CFLAGS: "-arch ${{ matrix.arch[0] }}"
-      CPPFLAGS: "-arch ${{ matrix.arch[0] }}"
-      CXXFLAGS: "-std=c++11 -arch ${{ matrix.arch[0] }}"
-
-      PREFIX: ${{github.workspace}}/macosx_${{ matrix.arch[0] }}
-      HOST: "${{ matrix.arch[0] }}-apple-darwin${{ matrix.arch[1] }}"
+      CXXFLAGS: "-std=c++11"
+      PREFIX: ${{github.workspace}}/macosx_x86_64
 
     steps:
     - uses: actions/checkout@v3
@@ -81,17 +70,17 @@ jobs:
 
     - name: Install HDF5
       run: |
-        python tools/install_hdf5.py $HDF5_VERSION --prefix=$PREFIX --libdir=/usr/local/lib --host=$HOST
+        python tools/install_hdf5.py $HDF5_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
         cp /usr/local/lib/libhdf5* $PREFIX/lib/
 
     - name: Install Libint
       run: |
         cp -r $PREFIX/include/* /usr/local/include/
-        python tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib --host=$HOST --target=$HOST
+        python tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
         cp /usr/local/lib/libint2* $PREFIX/lib/
 
     - name: Create archive
-      run: tar -czvf $PREFIX.tar.gz macosx_${{ matrix.arch[0] }}
+      run: tar -czvf $PREFIX.tar.gz macosx_x86_64
 
     - uses: actions/upload-artifact@v3
       with:
