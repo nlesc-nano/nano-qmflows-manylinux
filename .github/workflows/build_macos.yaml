@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   release:
     types: [published]
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -19,17 +20,29 @@ env:
   EIGEN_VERSION: "3.4.0"
   HDF5_VERSION: "1.12.2"
   LIBINT_VERSION: "2.7.1"
+  GMP_VERSION: "6.2.1"
 
 jobs:
   build:
-    name: Build MacOS macosx_x86_64 dependencies
+    name: Build MacOS macosx_${{ matrix.arch[0] }} dependencies
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          # [<architecture>, <min darwin version>]
+          - ["x86_64", "10.4"]
+          - ["arm64", "11"]
     env:
-      MACOSX_DEPLOYMENT_TARGET: "10.14"
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.arch[1] }}
       CC: "/usr/bin/clang"
       CXX: "/usr/bin/clang++"
-      CXXFLAGS: "-std=c++11"
-      PREFIX: ${{github.workspace}}/macosx_x86_64
+      CXXFLAGS: "-std=c++11 -arch ${{ matrix.arch[0] }}"
+      PREFIX: ${{github.workspace}}/macos_${{ matrix.arch[0] }}
+      CFLAGS: "-arch ${{ matrix.arch[0] }}"
+      CPPFLAGS: "-arch ${{ matrix.arch[0] }}"
+      LDFLAGS: "-arch ${{ matrix.arch[0] }}"
+      HOST: "${{ matrix.arch[0] }}-apple-darwin"
 
     steps:
     - uses: actions/checkout@v3
@@ -44,6 +57,9 @@ jobs:
       run: |
         which python
         python --version
+
+    - name: Clang info
+      run: clang --version
 
     - name: Installed packages
       run: pip list
@@ -68,15 +84,51 @@ jobs:
     - name: Install Eigen
       run: python tools/install_eigen.py $EIGEN_VERSION --prefix=$PREFIX
 
+    - name: Install GMP
+      if: matrix.arch[0] == 'arm64'
+      run: |
+        export CFLAGS="$CFLAGS --target=$HOST"
+        python tools/install_gmp.py $GMP_VERSION --host=$HOST
+
     - name: Install HDF5
       run: |
-        python tools/install_hdf5.py $HDF5_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
+        case "${{ matrix.arch[0] }}" in
+          "arm64")
+            export APPLY_HDF5_PATCH=1
+            export ac_cv_sizeof_long_double=8
+            export hdf5_cv_ldouble_to_long_special=no
+            export hdf5_cv_long_to_ldouble_special=no
+            export hdf5_cv_ldouble_to_llong_accurate=yes
+            export hdf5_cv_llong_to_ldouble_correct=yes
+            export hdf5_cv_disable_some_ldouble_conv=no
+            export hdf5_cv_system_scope_threads=yes
+            export hdf5_cv_printf_ll="l"
+            export PATH="/tmp/native-build/bin:$PATH"
+            export HOST="aarch64-apple-darwin${{ matrix.arch[1] }}"
+            mkdir -p /tmp/native-build/bin
+            ;;
+        esac
+
+        python tools/install_hdf5.py $HDF5_VERSION \
+          --prefix=$PREFIX \
+          --libdir=/usr/local/lib \
+          --host=$HOST
         cp /usr/local/lib/libhdf5* $PREFIX/lib/
 
     - name: Install Libint
       run: |
+        case "${{ matrix.arch[0] }}" in
+          "arm64")
+            export HOST="aarch64-apple-darwin${{ matrix.arch[1] }}" ;;
+        esac
+
         cp -r $PREFIX/include/* /usr/local/include/
-        python tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
+        python tools/install_libint.py $LIBINT_VERSION \
+          --prefix=$PREFIX \
+          --libdir=/usr/local/lib \
+          --build=x86_64-apple-darwin \
+          --host=$HOST \
+          --target=$HOST
         cp /usr/local/lib/libint2* $PREFIX/lib/
 
     - name: Create archive
