@@ -1,19 +1,19 @@
-ARG PLATFORM
-ARG HIGHFIVE_VERSION
-ARG BOOST_VERSION
-ARG EIGEN_VERSION
-ARG HDF5_VERSION
-ARG LIBINT_VERSION
-ARG GMP_VERSION
+ARG platform
+FROM quay.io/pypa/${platform}
 
-FROM quay.io/pypa/${PLATFORM}
+ARG highfive_version
+ARG boost_version
+ARG eigen_version
+ARG hdf5_version
+ARG libint_version
+ARG gmp_version
 
-ENV HIGHFIVE_VERSION=${HIGHFIVE_VERSION}
-ENV BOOST_VERSION=${BOOST_VERSION}
-ENV EIGEN_VERSION=${EIGEN_VERSION}
-ENV HDF5_VERSION=${HDF5_VERSION}
-ENV LIBINT_VERSION=${LIBINT_VERSION}
-ENV GMP_VERSION=${GMP_VERSION}
+ENV HIGHFIVE_VERSION=${highfive_version}
+ENV BOOST_VERSION=${boost_version}
+ENV EIGEN_VERSION=${eigen_version}
+ENV HDF5_VERSION=${hdf5_version}
+ENV LIBINT_VERSION=${libint_version}
+ENV GMP_VERSION=${gmp_version}
 ENV PATH_OLD="${PATH}"
 ENV PATH="/workspace/venv/bin/:/opt/python/cp310-cp310/bin/:${PATH}"
 

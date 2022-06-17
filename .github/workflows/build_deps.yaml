@@ -50,13 +50,13 @@ jobs:
           latest
           ${{ github.ref_name }}
         buildArgs: |
-          PLATFORM=${{ matrix.platform }}
-          HIGHFIVE_VERSION=${HIGHFIVE_VERSION}
-          BOOST_VERSION=${BOOST_VERSION}
-          EIGEN_VERSION=${EIGEN_VERSION}
-          HDF5_VERSION=${HDF5_VERSION}
-          LIBINT_VERSION=${LIBINT_VERSION}
-          GMP_VERSION=${GMP_VERSION}
+          platform=${{ matrix.platform }}
+          highfive_version=${{ env.HIGHFIVE_VERSION }}
+          boost_version=${{ env.BOOST_VERSION }}
+          eigen_version=${{ env.EIGEN_VERSION }}
+          hdf5_version=${{ env.HDF5_VERSION }}
+          libint_version=${{ env.LIBINT_VERSION }}
+          gmp_version=${{ env.GMP_VERSION }}
 
   build_macos:
     name: Build macosx_x86_64 dependencies
@@ -130,7 +130,7 @@ jobs:
   upload_artifacts:
     name: Attach artifacts to release
     runs-on: ubuntu-latest
-    needs: [build_macos]
+    needs: [build_macos, build_linux]
     if: github.event_name == 'release'
     steps:
       - uses: actions/download-artifact@v3
