@@ -45,7 +45,7 @@ jobs:
         accessToken: ${{ secrets.GITHUB_TOKEN }}
         imageName: ${{ matrix.platform }}-qmflows
         containerRegistry: true
-        contextName: ./manylinux2014.dockerfile
+        contextName: ./manylinux.dockerfile
         tag: |
           latest
           ${{ github.ref_name }}
