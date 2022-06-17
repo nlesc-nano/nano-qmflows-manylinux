@@ -1,4 +1,4 @@
-name: Build MacOS dependencies
+name: Build dependencies
 
 on:
   workflow_dispatch:
@@ -19,10 +19,47 @@ env:
   EIGEN_VERSION: "3.4.0"
   HDF5_VERSION: "1.12.2"
   LIBINT_VERSION: "2.7.1"
+  GMP_VERSION: "6.2.1"
 
 jobs:
-  build:
-    name: Build MacOS macosx_x86_64 dependencies
+  build_linux:
+    name: Build ${{ matrix.platform }} dependencies
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [manylinux2014_x86_64, manylinux2014_aarch64]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up QEMU
+      if: matrix.platform == 'manylinux2014_aarch64'
+      uses: docker/setup-qemu-action@v1
+      with:
+        platforms: arm64
+
+    - name: Publish Image
+      uses: matootie/github-docker@v3.1.0
+      with:
+        accessToken: ${{ secrets.GITHUB_TOKEN }}
+        imageName: ${{ matrix.platform }}-qmflows
+        containerRegistry: true
+        contextName: ./manylinux2014.dockerfile
+        tag: |
+          latest
+          ${{ github.ref_name }}
+        buildArgs: |
+          PLATFORM=${{ matrix.platform }}
+          HIGHFIVE_VERSION=${HIGHFIVE_VERSION}
+          BOOST_VERSION=${BOOST_VERSION}
+          EIGEN_VERSION=${EIGEN_VERSION}
+          HDF5_VERSION=${HDF5_VERSION}
+          LIBINT_VERSION=${LIBINT_VERSION}
+          GMP_VERSION=${GMP_VERSION}
+
+  build_macos:
+    name: Build macosx_x86_64 dependencies
     runs-on: macos-latest
     env:
       MACOSX_DEPLOYMENT_TARGET: "10.14"
@@ -35,7 +72,9 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
 
     - name: Install dependencies
       run: pip install -e .
@@ -53,6 +92,7 @@ jobs:
         mkdir -p $PREFIX/lib
         mkdir -p $PREFIX/bin
         mkdir -p $PREFIX/include
+        cp -r licenses $PREFIX/licenses
 
     - name: Install Automake
       run: |
@@ -87,7 +127,7 @@ jobs:
         name: deps
         path: macosx_*.tar.gz
 
-  upload_wheels:
+  upload_artifacts:
     name: Attach artifacts to release
     runs-on: ubuntu-latest
     needs: [build_macos]
