@@ -38,9 +38,13 @@ jobs:
       run: |
         case "${{ github.event_name }}" in
           "release")
-            echo "TAG=${{ github.ref_name }}" >> $GITHUB_ENV ;;
+            echo "TAG1=${{ github.ref_name }}" >> $GITHUB_ENV
+            echo "TAG2=latest" >> $GITHUB_ENV
+            ;;
           *)
-            echo "TAG=dev0" >> $GITHUB_ENV ;;
+            echo "TAG1=dev0" >> $GITHUB_ENV
+            echo "TAG2=dev0" >> $GITHUB_ENV
+            ;;
         esac
 
     - name: Set up QEMU
@@ -56,7 +60,9 @@ jobs:
         imageName: ${{ matrix.platform }}-qmflows
         containerRegistry: true
         contextName: ./manylinux.dockerfile
-        tag: ${{ env.TAG }}
+        tag: |
+          ${{ env.TAG1 }}
+          ${{ env.TAG2 }}
         buildArgs: |
           platform=${{ matrix.platform }}
           highfive_version=${{ env.HIGHFIVE_VERSION }}
