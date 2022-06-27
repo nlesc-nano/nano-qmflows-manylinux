@@ -40,7 +40,8 @@ logger.addHandler(stdout_handler)
 
 
 class BaseTimeLogger(contextlib.ContextDecorator, Generic[_LoggerType]):
-    """A context decorator for logging github-style ``:group:`` blocks before/after function calls.
+    """A re-usable, non-reentrant and non-thread-safe context decorator for logging github-style \
+    ``:group:`` blocks before/after function calls.
 
     Examples
     --------
@@ -92,10 +93,14 @@ class BaseTimeLogger(contextlib.ContextDecorator, Generic[_LoggerType]):
         """Initialize the instance."""
         self._logger = logger
         self._message = message
+        self._start: float | None = None
 
     def __enter__(self) -> None:
         """Enter the context manager."""
+        if self._start is not None:
+            raise ValueError(f"{type(self).__name__} cannot be used in a reentrant manner")
         self._start = time.time()
+
         self.flush()
         if self.message is not None:
             self.write(f"::group::{self.message}")
@@ -109,7 +114,10 @@ class BaseTimeLogger(contextlib.ContextDecorator, Generic[_LoggerType]):
         exc_traceback: types.TracebackType | None
     ) -> None:
         """Exit the context manager."""
+        assert self._start is not None
         duration = time.time() - self._start
+        self._start = None
+
         self.flush()
         self.write("\n::endgroup::")
         if exc_type is None:
