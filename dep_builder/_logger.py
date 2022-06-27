@@ -163,10 +163,31 @@ class BaseTimeLogger(contextlib.ContextDecorator, Generic[_LoggerType]):
 class TimeLogger(BaseTimeLogger[logging.Logger]):
     """A :class:`BaseTimeLogger` subclass with a fixed :class:`~logging.Logger` instance.
 
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> from dep_builder import TimeLogger
+
+        >>> @TimeLogger("message block")
+        ... def func() -> None:
+        ...     print("1 2 3 4")
+
+        >>> func()
+        ::group::message block
+        1 2 3 4
+
+        ::endgroup::
+                                                                        ✓ 0.00s
+
     Parameters
     ----------
     message : None | str
         The group-message to-be displayed upon entering the context manager.
+
+    See Also
+    --------
+    dep_builder.logger : The :mod:`dep_builder` logger as used by this class.
 
     """
 

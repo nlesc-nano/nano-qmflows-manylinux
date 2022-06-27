@@ -134,7 +134,7 @@ def read_config_log(
 
 
 def build(build_path: str | os.PathLike[str], cpu_count: int | None = None) -> None:
-    """Build and install a package via ``make``.
+    """Build and install a package via GNU make.
 
     Parameters
     ----------

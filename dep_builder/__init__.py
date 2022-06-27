@@ -1,4 +1,4 @@
-"""Utilities for building (and logging) packages.
+"""Utilities for the building of packages and logging thereof.
 
 Index
 -----
