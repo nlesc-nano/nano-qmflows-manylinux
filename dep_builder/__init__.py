@@ -22,11 +22,16 @@ API
 .. autofunction:: build
 .. autofunction:: parse_version
 .. autoclass:: BaseTimeLogger
+    :members: message, logger, write, flush
 .. autoclass:: TimeLogger
 .. autodata:: logger
 .. autodata:: __version__
 
 """
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from ._version import __version__
 from ._logger import logger, TimeLogger, BaseTimeLogger
@@ -43,3 +48,14 @@ __all__ = [
     "build",
     "parse_version",
 ]
+
+# Redeclare these objects in the scope of the main namespace so they're picked
+# up by Sphinx's `autodata` directive
+if not TYPE_CHECKING:
+    #: The :mod:`dep_builder` version.
+    __version__: str
+
+    #: The :mod:`dep_builder` version.
+    logger: logging.Logger
+
+del TYPE_CHECKING

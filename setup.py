@@ -6,7 +6,7 @@ version_path = os.path.join(os.path.dirname(__file__), "dep_builder", "_version.
 with open(version_path, "r", encoding="utf-8") as f:
     exec(f.read(), version_dict)
 
-readme_path = os.path.join(os.path.dirname(__file__), "README.md")
+readme_path = os.path.join(os.path.dirname(__file__), "README.rst")
 with open(readme_path, "r", encoding="utf-8") as f:
     readme = f.read()
 
@@ -15,6 +15,7 @@ setup(
     version=version_dict["__version__"],
     description="Scripts for building nano-qmflows C/C++ dependencies.",
     long_description=f"{readme}\n\n",
+    long_description_content_type="text/x-rst",
     author="Bas van Beek",
     author_email="bas.vanbeek@hotmail.com",
     url="https://github.com/nlesc-nano/nano-qmflows-manylinux",
@@ -45,4 +46,7 @@ setup(
         "requests",
         "packaging",
     ],
+    extras_require={
+        "doc": ["sphinx>=4.1", "sphinx_rtd_theme"],
+    }
 )
