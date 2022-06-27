@@ -55,7 +55,7 @@ if not TYPE_CHECKING:
     #: The :mod:`dep_builder` version.
     __version__: str
 
-    #: The :mod:`dep_builder` version.
+    #: The :mod:`dep_builder` logger.
     logger: logging.Logger
 
 del TYPE_CHECKING

@@ -42,6 +42,29 @@ logger.addHandler(stdout_handler)
 class BaseTimeLogger(contextlib.ContextDecorator, Generic[_LoggerType]):
     """A context decorator for logging github-style ``:group:`` blocks before/after function calls.
 
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> import sys
+        >>> import logging
+        >>> from dep_builder import BaseTimeLogger
+
+        >>> logger = logging.getLogger()
+        >>> logger.setLevel(logging.INFO)
+        >>> logger.addHandler(logging.StreamHandler(stream=sys.stdout))
+
+        >>> @BaseTimeLogger(logger, "message block")
+        ... def func() -> None:
+        ...     print("1 2 3 4")
+
+        >>> func()
+        ::group::message block
+        1 2 3 4
+
+        ::endgroup::
+                                                                        ✓ 0.00s
+
     Parameters
     ----------
     logger : logging.Logger
