@@ -201,11 +201,9 @@ class TimeLogger(BaseTimeLogger[logging.Logger]):
 
     __slots__ = ()
 
-    _logger = logger
-
     def __init__(self, message: None | str = None) -> None:
         """Initialize the instance."""
-        self._message = message
+        super().__init__(logger, message)
 
     def __repr__(self) -> str:
         """Implement :func:`repr(self) <repr>`."""
