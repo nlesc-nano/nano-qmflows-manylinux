@@ -5,13 +5,14 @@ on:
 jobs:
   download_cirrus_artifact:
     name: Download Cirrus CI MacOS ARM64 artifacts
-    if: github.event.check_suite.app.name == 'Cirrus CI'
+    if: github.event.check_suite.app.name == 'Cirrus CI' && github.event.check_suite.app.name == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: test123
         run: |
           echo ${{ github.event.check_suite.conclusion }}
           echo ${{ github.event.check_suite.total_count }}
+          echo ${{ github.event.check_suite.id }}
           echo ${{ github.event.check_suite.app }}
           echo ${{ github.event.check_suite.app.id }}
           echo ${{ github.event.check_suite.app.node_id }}
@@ -40,3 +41,5 @@ jobs:
         with:
           files: 'output/*'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+# gh api -H "Accept: application/vnd.github+json" /repos/nlesc-nano/nano-qmflows-manylinux/check-suites/CHECK_SUITE_ID
