@@ -27,7 +27,7 @@ jobs:
   upload_artifacts:
     name: Attach artifacts to release
     runs-on: ubuntu-latest
-    needs: [check_cirrus]
+    needs: [download_cirrus_artifact]
     if: github.event_name == 'release'
     steps:
       - uses: actions/download-artifact@v3
