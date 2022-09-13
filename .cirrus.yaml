@@ -1,0 +1,55 @@
+macos_arm64_task:
+  name: Build dependencies / Build macosx_arm64 dependencies
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-monterey-xcode:latest
+
+  env:
+    MACOSX_DEPLOYMENT_TARGET: "11"
+    CC: "/usr/bin/clang"
+    CXX: "/usr/bin/clang++"
+    CXXFLAGS: "-std=c++11"
+    PREFIX: ${CIRRUS_WORKING_DIR}/macosx_arm64
+    HIGHFIVE_VERSION: "2.4.1"
+    BOOST_VERSION: "1.80.0"
+    EIGEN_VERSION: "3.4.0"
+    HDF5_VERSION: "1.12.2"
+    LIBINT_VERSION: "2.7.2"
+    GMP_VERSION: "6.2.1"
+
+  create_output_dir_script:
+    - mkdir -p $PREFIX/lib
+    - mkdir -p $PREFIX/bin
+    - mkdir -p $PREFIX/include
+    - sudo mkdir -p /usr/local/lib
+    - sudo mkdir -p /usr/local/include
+    - sudo chmod -R a+rwx /usr/local
+    - cp -r licenses $PREFIX/licenses
+  install_brew_dependencies_script:
+    - brew update
+    - brew install automake
+    - brew install python
+  install_python_dependencies_script:
+    - pip3 install -e .
+    - which python3 && python3 --version
+    - pip3 list
+  install_highfive_script:
+    - python3 tools/install_highfive.py $HIGHFIVE_VERSION --prefix=$PREFIX
+  install_boost_script:
+    - python3 tools/install_boost.py $BOOST_VERSION --prefix=$PREFIX
+  isntall_eigen_script:
+    - python3 tools/install_eigen.py $EIGEN_VERSION --prefix=$PREFIX
+  install_hdf5_script:
+    - python3 tools/install_hdf5.py $HDF5_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
+    - cp /usr/local/lib/libhdf5* $PREFIX/lib/
+  install_gmp_script:
+    - python3 tools/install_gmp.py $GMP_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
+    - cp /usr/local/lib/libgmp* $PREFIX/lib/
+  install_libint_script:
+    - cp -r $PREFIX/include/* /usr/local/include/
+    - python3 tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
+    - cp /usr/local/lib/libint2* $PREFIX/lib/
+  create_archive_script:
+    - tar -czvf $PREFIX.tar.gz $PREFIX
+  artifacts:
+    path: "${PREFIX}.tar.gz"
+    type: application/gzip
