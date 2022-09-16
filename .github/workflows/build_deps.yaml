@@ -140,3 +140,20 @@ jobs:
       with:
         name: deps
         path: macosx_*.tar.gz
+
+  upload_artifacts:
+    name: Attach artifacts to release
+    runs-on: ubuntu-latest
+    needs: [build_macos_x86_64, build_linux]
+    if: github.event_name == 'release'
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: deps
+          path: output
+
+      - name: Attach artifacts to GitHub release
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'output/*'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
