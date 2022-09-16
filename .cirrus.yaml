@@ -49,7 +49,8 @@ macos_arm64_task:
     - python3 tools/install_libint.py $LIBINT_VERSION --prefix=$PREFIX --libdir=/usr/local/lib
     - cp /usr/local/lib/libint2* $PREFIX/lib/
   create_archive_script:
-    - tar -czvf $PREFIX.tar.gz $PREFIX
+    - cd $PREFIX && cd ..
+    - tar -czvf $PREFIX.tar.gz macosx_arm64
   artifacts:
     path: "${PREFIX}.tar.gz"
     type: application/gzip
