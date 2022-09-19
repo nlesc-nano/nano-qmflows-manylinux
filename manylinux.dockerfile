@@ -15,7 +15,7 @@ ENV HDF5_VERSION=${hdf5_version}
 ENV LIBINT_VERSION=${libint_version}
 ENV GMP_VERSION=${gmp_version}
 ENV PATH_OLD="${PATH}"
-ENV PATH="/workspace/venv/bin/:/opt/python/cp39-cp39/bin/:${PATH}"
+ENV PATH="/workspace/venv/bin/:/opt/python/cp310-cp310/bin/:/opt/python/cp39-cp39/bin/:/opt/python/cp38-cp38/bin/:/opt/python/cp37-cp37/bin/:${PATH}"
 
 COPY . /workspace
 
