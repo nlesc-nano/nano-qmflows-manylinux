@@ -4,7 +4,7 @@
 
 nano-qmflows-manylinux
 ----------------------
-Manylinux2014 docker images with `Nano-QMFlows <https://github.com/SCM-NV/nano-qmflows>`_ C++ build dependencies.
+Manylinux docker images with `Nano-QMFlows <https://github.com/SCM-NV/nano-qmflows>`_ C++ build dependencies.
 
 Contains the following additional packages:
 
