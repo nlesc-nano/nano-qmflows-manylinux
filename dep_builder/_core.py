@@ -18,6 +18,41 @@ from . import logger
 __all__ = ["download_and_unpack", "configure", "read_config_log", "build", "parse_version"]
 
 
+def _has_common_prefix(
+    directory: str | os.PathLike[str],
+    target: str | os.PathLike[str],
+) -> bool:
+    """Check if two paths have the same common prefix."""
+    abs_directory = os.path.abspath(directory)
+    abs_target = os.path.abspath(target)
+    prefix = os.path.commonprefix([abs_directory, abs_target])
+    return prefix == abs_directory
+
+
+def _safe_extract_all(
+    tar: tarfile.TarFile,
+    path: str | os.PathLike[str] = ".",
+    members: Iterable[tarfile.TarInfo] | None = None,
+    *,
+    numeric_owner: bool = False,
+) -> None:
+    """A :meth:`tarfile.TarFile.extractall` variant that's safe against path traversal attacks.
+
+    See Also
+    --------
+    CVE-2001-1267
+        Directory traversal vulnerability in GNU tar 1.13.19 and earlier allows local users to
+        overwrite arbitrary files during archive extraction via a tar file whose filenames
+        contain a ``..`` (dot dot).
+
+    """
+    for member in tar.getmembers():
+        member_path = os.path.join(path, member.name)
+        if not _has_common_prefix(path, member_path):
+            raise tarfile.TarError("Attempted path traversal in tar file")
+    tar.extractall(path, members, numeric_owner=numeric_owner)
+
+
 def parse_version(version: str) -> Version:
     """Check that a PEP 440-compliant version is provided.
 
@@ -74,26 +109,7 @@ def download_and_unpack(
                 )
             output_dir = root.pop()
             logger.info(f"Unpack archive {archive_path!r} to {output_dir!r}")
-            def is_within_directory(directory, target):
-                
-                abs_directory = os.path.abspath(directory)
-                abs_target = os.path.abspath(target)
-            
-                prefix = os.path.commonprefix([abs_directory, abs_target])
-                
-                return prefix == abs_directory
-            
-            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
-            
-                for member in tar.getmembers():
-                    member_path = os.path.join(path, member.name)
-                    if not is_within_directory(path, member_path):
-                        raise Exception("Attempted Path Traversal in Tar File")
-            
-                tar.extractall(path, members, numeric_owner=numeric_owner) 
-                
-            
-            safe_extract(f2)
+            _safe_extract_all(f2)
     finally:
         if delete_archive and os.path.isfile(archive_path):
             os.remove(archive_path)
