@@ -54,7 +54,7 @@ jobs:
 
     - name: Set up QEMU
       if: matrix.platform == 'manylinux2014_aarch64'
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
       with:
         platforms: arm64
 
@@ -158,7 +158,7 @@ jobs:
           path: output
 
       - name: Attach artifacts to GitHub release
-        uses: AButler/upload-release-assets@v2.0
+        uses: AButler/upload-release-assets@v2.0.2
         with:
           files: 'output/*'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
