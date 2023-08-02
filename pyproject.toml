@@ -50,6 +50,13 @@ doc = [
     "sphinx>=4.1",
     "sphinx_rtd_theme",
 ]
+lint = [
+    "pydocstyle[toml]>=6.1",
+    "flake8>=5",
+    "Flake8-pyproject>=1.0.1",
+    "mypy",
+    "types-requests",
+]
 
 [tool.setuptools.packages.find]
 include = ["dep_builder*"]
@@ -65,3 +72,11 @@ write_to = "dep_builder/_version.py"
 
 [tool.mypy]
 show_error_codes = true
+strict = true
+
+[tool.pydocstyle]
+add_ignore = ["D401"]
+
+[tool.flake8]
+max-line-length = 125
+exclude = ["dep_builder/_version.py"]

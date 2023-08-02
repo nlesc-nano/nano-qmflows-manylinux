@@ -7,7 +7,7 @@ import os
 import argparse
 from pathlib import Path
 
-from dep_builder import logger, TimeLogger, download_and_unpack, parse_version
+from dep_builder import TimeLogger, download_and_unpack, parse_version
 
 URL_TEMPLATE = "https://github.com/BlueBrain/HighFive/archive/refs/tags/v{version}.tar.gz"
 

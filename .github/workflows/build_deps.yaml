@@ -166,3 +166,35 @@ jobs:
         with:
           files: 'output/*'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python on ubuntu-latest
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install linters
+        run: pip install .[lint]
+
+      - name: Python info
+        run: |
+          which python
+          python --version
+
+      - name: Installed packages
+        run: pip list
+
+      - name: Run pydocstyle
+        run: pydocstyle dep_builder
+
+      - name: Run flake8
+        run: flake8 dep_builder tools
+
+      - name: Run mypy
+        run: mypy dep_builder tools
