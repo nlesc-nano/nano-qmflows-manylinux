@@ -2,3 +2,4 @@
 *.egg-info/
 *.pyc
 docs/_build/
+dep_builder/_version.py
