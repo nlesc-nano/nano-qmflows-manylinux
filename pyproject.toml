@@ -1,5 +1,67 @@
-# Minimum requirements for the build system to execute.
+[build-system]
 requires = [
-    'setuptools>=48.0',
-    'wheel>=0.21',
+    "setuptools>=61.0",
+    "setuptools_scm[toml]>=6.2",
 ]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dep_builder"
+dynamic = [
+    "version",
+    "readme",
+]
+description = "Scripts for building nano-qmflows C/C++ dependencies."
+license = { file = "LICENSE.md" }
+authors = [
+    { name = "Bas van Beek", email = "bas.vanbeek@hotmail.com" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Build Tools",
+    "Typing :: Typed",
+]
+requires-python = ">=3.7"
+dependencies = [
+    "requests",
+    "packaging",
+]
+
+[project.urls]
+Homepage = "https://github.com/nlesc-nano/nano-qmflows-manylinux"
+"Bug Tracker" = "https://github.com/nlesc-nano/nano-qmflows-manylinux/issues"
+Documentation = "https://nano-qmflows-manylinux.readthedocs.io/en/latest/"
+
+[project.optional-dependencies]
+doc = [
+    "sphinx>=4.1",
+    "sphinx_rtd_theme",
+]
+
+[tool.setuptools.packages.find]
+where = ["dep_builder"]
+
+[tool.setuptools.package-data]
+dep_builder = ["py.typed"]
+
+[tool.setuptools.dynamic]
+readme = { file = ["README.rst"], content-type = "text/x-rst" }
+
+[tool.setuptools_scm]
+write_to = "dep_builder/_version.py"
+
+[tool.mypy]
+show_error_codes = true
