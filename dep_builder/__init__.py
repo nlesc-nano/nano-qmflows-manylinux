@@ -38,6 +38,7 @@ from typing import TYPE_CHECKING
 from ._version import __version__, __version_tuple__
 from ._logger import logger, TimeLogger, BaseTimeLogger
 from ._core import download_and_unpack, configure, read_config_log, build, parse_version
+from . import _argparse as _argparse  # noqa: F401
 
 __all__ = [
     "__version__",

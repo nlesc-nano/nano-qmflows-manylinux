@@ -7,6 +7,7 @@ import os
 import argparse
 from pathlib import Path
 
+import dep_builder
 from dep_builder import TimeLogger, download_and_unpack, parse_version
 
 URL_TEMPLATE = "https://boostorg.jfrog.io/artifactory/main/release/{version}/source/boost_{version_underscore}.tar.gz"
@@ -36,6 +37,8 @@ def main(version: str, prefix: str | None = None) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage="python ./install_boost.py 12.1", description=__doc__)
+    parser.add_argument("--license", dest="license", action=dep_builder._argparse.LicenseAction)
+    parser.add_argument("--version", action="version", version=f"%(prog)s {dep_builder.__version__}")
     parser.add_argument("version", help="The library version")
     parser.add_argument(
         "--prefix", nargs=1, help="install architecture-independent files in PREFIX.",

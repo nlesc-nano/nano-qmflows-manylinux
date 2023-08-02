@@ -9,6 +9,7 @@ import stat
 import argparse
 from pathlib import Path
 
+import dep_builder
 from dep_builder import TimeLogger, download_and_unpack, configure, read_config_log, build, parse_version
 
 URL_TEMPLATE = "https://github.com/evaleev/libint/archive/refs/tags/v{version}.tar.gz"
@@ -51,6 +52,8 @@ def main(version: str, args: list[str]) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage="python ./install_libint.py 2.7.1", description=__doc__)
+    parser.add_argument("--license", dest="license", action=dep_builder._argparse.LicenseAction)
+    parser.add_argument("--version", action="version", version=f"%(prog)s {dep_builder.__version__}")
     parser.add_argument("version", help="The library version")
     parser.add_argument("args", metavar="ARGS", default=[], nargs=argparse.REMAINDER,
                         help="Arguments to pass the 'configure' file")
