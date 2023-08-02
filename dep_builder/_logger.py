@@ -7,11 +7,11 @@ import contextlib
 import sys
 import time
 import types
-from typing import TYPE_CHECKING, ClassVar, TypeVar, Generic
-from collections.abc import Iterable
+from typing import TYPE_CHECKING, ClassVar, TypeVar, Generic, Any
+from collections.abc import Iterable, Callable
 
 if TYPE_CHECKING:
-    from typing_extensions import Protocol
+    from typing_extensions import Protocol, Self
 
     class _HandlerProtocol(Protocol):
         def flush(self) -> object: ...
@@ -21,7 +21,6 @@ if TYPE_CHECKING:
         def handlers(self) -> Iterable[_HandlerProtocol]: ...
         def info(self, __message: str) -> object: ...
 
-_Self = TypeVar("_Self", bound="BaseTimeLogger")
 _LoggerType = TypeVar("_LoggerType", bound="_LoggingProtocol")
 
 __all__ = ["logger", "stdout_handler", "TimeLogger", "BaseTimeLogger"]
@@ -74,6 +73,7 @@ class BaseTimeLogger(contextlib.ContextDecorator, Generic[_LoggerType]):
         The group-message to-be displayed upon entering the context manager.
 
     """
+
     __slots__ = ("_message", "_start", "_logger", "_hash")
 
     GREEN: ClassVar[str] = "\033[32m"
@@ -136,11 +136,11 @@ class BaseTimeLogger(contextlib.ContextDecorator, Generic[_LoggerType]):
             return NotImplemented
         return self.logger == other.logger and self.message == other.message
 
-    def __copy__(self: _Self) -> _Self:
+    def __copy__(self) -> Self:
         """Implement :func:`copy.copy(self) <copy.copy>`."""
         return self
 
-    def __deepcopy__(self: _Self, memo: object = None) -> _Self:
+    def __deepcopy__(self, memo: object = None) -> Self:
         """Implement :func:`copy.deepcopy(self) <copy.deepcopy>`."""
         return self
 
@@ -153,7 +153,7 @@ class BaseTimeLogger(contextlib.ContextDecorator, Generic[_LoggerType]):
         self._hash: int = hash(self.logger) ^ hash(self.message)
         return self._hash
 
-    def __reduce__(self: _Self) -> tuple[type[_Self], tuple[_LoggerType, str | None]]:
+    def __reduce__(self) -> tuple[Callable[..., Self], tuple[Any, ...]]:
         """Helper for :mod:`pickle`."""
         cls = type(self)
         return cls, (self.logger, self.message)
@@ -210,7 +210,7 @@ class TimeLogger(BaseTimeLogger[logging.Logger]):
         cls = type(self)
         return f"{cls.__name__}(message={self.message!r})"
 
-    def __reduce__(self: _Self) -> tuple[type[_Self], tuple[str | None]]:  # type: ignore[override]
+    def __reduce__(self) -> tuple[Callable[..., Self], tuple[Any, ...]]:
         """Helper for :mod:`pickle`."""
         cls = type(self)
         return cls, (self.message,)
