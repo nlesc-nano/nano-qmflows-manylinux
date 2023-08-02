@@ -15,12 +15,12 @@ defaults:
     shell: bash
 
 env:
-  HIGHFIVE_VERSION: "2.7.0"
-  BOOST_VERSION: "1.81.0"
+  HIGHFIVE_VERSION: "2.7.1"
+  BOOST_VERSION: "1.82.0"
   EIGEN_VERSION: "3.4.0"
-  HDF5_VERSION: "1.14.0"
+  HDF5_VERSION: "1.14.1"
   LIBINT_VERSION: "2.7.2"
-  GMP_VERSION: "6.2.1"
+  GMP_VERSION: "6.3.0"
 
 jobs:
   build_linux:
