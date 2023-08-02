@@ -148,3 +148,18 @@ napoleon_use_admonition_for_notes = True
 # False to use the .. rubric:: directive instead.
 # Defaults to False.
 napoleon_use_admonition_for_references = True
+
+# Bibliographic Dublin Core info.
+epub_title = project
+
+# The unique identifier of the text. This can be a ISBN number
+# or the project homepage.
+#
+# epub_identifier = ''
+
+# A unique identification for the text.
+#
+# epub_uid = ''
+
+# A list of files that should not be packed into the epub file.
+epub_exclude_files = ['search.html']
