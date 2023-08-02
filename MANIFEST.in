@@ -1,0 +1,6 @@
+exclude .github/**
+exclude docs/**
+exclude tools/**
+exclude licenses/**
+exclude .*
+exclude *.dockerfile
