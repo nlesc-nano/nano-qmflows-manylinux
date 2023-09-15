@@ -65,6 +65,6 @@ if not TYPE_CHECKING:
     __version_tuple__: tuple[int, int, int, str, str]
 
     #: The :mod:`dep_builder` logger.
-    logger: logging.Logger
+    logger: logging.Logger  # noqa: F821
 
 del TYPE_CHECKING, logging
