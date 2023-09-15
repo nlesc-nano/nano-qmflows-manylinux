@@ -33,11 +33,12 @@ API
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from ._version import __version__, __version_tuple__
 from ._logger import logger, TimeLogger, BaseTimeLogger
-from ._core import download_and_unpack, configure, read_config_log, build, parse_version
+from ._core import download_and_unpack, configure, read_config_log, build, parse_version, unpack
 from . import _argparse as _argparse  # noqa: F401
 
 __all__ = [
@@ -51,6 +52,7 @@ __all__ = [
     "read_config_log",
     "build",
     "parse_version",
+    "unpack",
 ]
 
 # Redeclare these objects in the scope of the main namespace so they're picked
@@ -60,9 +62,9 @@ if not TYPE_CHECKING:
     __version__: str
 
     #: The :mod:`dep_builder` version as a tuple.
-    __version_tuple__: tuple
+    __version_tuple__: tuple[int, int, int, str, str]
 
     #: The :mod:`dep_builder` logger.
-    logger: logging.Logger  # noqa: F821
+    logger: logging.Logger
 
-del TYPE_CHECKING
+del TYPE_CHECKING, logging

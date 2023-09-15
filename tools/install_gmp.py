@@ -8,11 +8,9 @@ import argparse
 from pathlib import Path
 
 import dep_builder
-from dep_builder import TimeLogger, download_and_unpack, configure, read_config_log, build, parse_version
+from dep_builder import TimeLogger, unpack, configure, read_config_log, build, parse_version
 
-URL_TEMPLATE = "https://gmplib.org/download/gmp/gmp-{version}.tar.xz"
-
-download_gmp = TimeLogger("Download and unpack GMP")(download_and_unpack)
+unpack_gmp = TimeLogger("Download and unpack GMP")(unpack)
 read_config_log_gmp = TimeLogger("Dumping GMP config log")(read_config_log)
 build_gmp = TimeLogger("Build GMP")(build)
 configure_gmp = TimeLogger("Configure GMP")(configure)
@@ -22,13 +20,13 @@ parse_gmp_version = TimeLogger("Parsing GMP version")(parse_version)
 def main(version: str, args: list[str]) -> None:
     """Run the script."""
     parse_gmp_version(version)
-    url = URL_TEMPLATE.format(version=version)
 
+    archive_path = Path(__file__).parent / "src" / f"gmp-{version}.tar.xz"
     src_path: None | Path = None
     build_path = Path(os.getcwd()) / "build"
 
     try:
-        src_path = download_gmp(url)
+        src_path = unpack_gmp(archive_path)
         try:
             config_args = ["--enable-cxx"] + args
             configure_gmp(src_path, build_path, config_args=config_args)

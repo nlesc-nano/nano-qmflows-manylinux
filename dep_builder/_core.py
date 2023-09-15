@@ -15,7 +15,14 @@ from packaging.version import Version
 
 from . import logger
 
-__all__ = ["download_and_unpack", "configure", "read_config_log", "build", "parse_version"]
+__all__ = [
+    "download_and_unpack",
+    "configure",
+    "read_config_log",
+    "build",
+    "parse_version",
+    "unpack",
+]
 
 
 def _has_common_prefix(
@@ -113,6 +120,36 @@ def download_and_unpack(
     finally:
         if delete_archive and os.path.isfile(archive_path):
             os.remove(archive_path)
+
+    return Path(os.getcwd()) / output_dir
+
+
+def unpack(
+    archive_path: str | os.PathLike[str],
+) -> Path:
+    """Unpack the archive from the provided path.
+
+    Parameters
+    ----------
+    archive_path : str | os.PathLike[str]
+        The (absolute) path to the to-be downloaded archive.
+
+    Returns
+    -------
+    pathlib.Path
+        The absolute path to the extracted archive.
+
+    """
+    archive_path = os.fsdecode(archive_path)
+    with tarfile.open(archive_path, "r") as f:
+        root = {i.split(os.sep)[0 if not i.startswith(".") else 1] for i in f.getnames()}
+        if len(root) != 1:
+            raise ValueError(
+                f"Expected a single top-directory in {archive_path!r}, observed {len(root)}"
+            )
+        output_dir = root.pop()
+        logger.info(f"Unpack archive {archive_path!r} to {output_dir!r}")
+        _safe_extract_all(f)
 
     return Path(os.getcwd()) / output_dir
 
